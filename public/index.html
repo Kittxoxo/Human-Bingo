@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Human Bingo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf0d4;--ink:#111;--blue:#0038a8;--red:#ce1126;--yel:#fcd116;--card:#fff;--line:#111;--pri:#ce1126;--slab:"Alfa Slab One",Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg) radial-gradient(#e6d09a 1px,transparent 1.6px) 0 0/14px 14px;color:var(--ink);font-family:Outfit,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+body::before,body::after{display:none}
+main{max-width:520px;margin:0 auto;padding:0 14px 48px}
+.flags{height:34px;margin:0 -14px 4px;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='34'%3E%3Cpath d='M0 4 Q45 12 90 4' stroke='%23111' fill='none' stroke-width='1.5'/%3E%3Cpolygon points='4,6 28,9 16,32' fill='%230038a8'/%3E%3Cpolygon points='34,9 58,10 46,32' fill='%23ce1126'/%3E%3Cpolygon points='64,9 88,6 76,32' fill='%23fcd116'/%3E%3C/svg%3E") repeat-x 0 0/90px 34px}
+h1{font-family:var(--slab);font-weight:400;font-size:2.1rem;line-height:1;margin:0 0 6px;color:var(--ink);text-shadow:2px 2px 0 var(--yel)}h1 span{color:var(--red)}
+h2,h3{margin:.3em 0;font-family:var(--slab);font-weight:400}
+.sub{font-size:.75rem;font-weight:800;letter-spacing:1px;color:var(--blue);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.sub code{font-family:"Courier New",monospace;background:#111;color:#4ade80;padding:1px 6px;border-radius:4px;font-size:.68rem;letter-spacing:0}
+button{font:inherit;font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;border:3px solid var(--line);border-radius:8px;padding:11px 18px;background:var(--red);color:#fff;cursor:pointer;box-shadow:3px 3px 0 var(--line);margin-bottom:6px;transition:transform .1s}
+button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--line)}button.alt{background:#fff;color:var(--ink)}button.red{background:var(--blue)}button:disabled{opacity:.45}
+.card{background:#fff;border:3px solid var(--line);border-radius:10px;padding:14px;box-shadow:5px 5px 0 var(--line);margin:12px 0}
+#timer{position:sticky;top:8px;z-index:5;text-align:center;font-family:var(--slab);font-size:.95rem;line-height:1.3;padding:10px 12px;border-radius:8px;background:#111;color:var(--yel);border:3px solid var(--yel);box-shadow:0 0 0 3px #111,5px 5px 0 3px var(--red)}
+#timer.run{font-size:2rem;letter-spacing:3px}#timer.low{background:var(--red);color:#fff;border-color:#fff;animation:p .7s steps(2) infinite}@keyframes p{50%{background:#7a0f1c}}
+.sheet{background:#fff;border:4px solid var(--line);border-radius:8px;padding:10px;box-shadow:6px 6px 0 var(--line),12px 12px 0 -2px var(--yel);margin:14px 0 18px}
+.hdr,.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--line);border:3px solid var(--line)}
+.hdr{border-bottom:0}.hdr b{font-family:var(--slab);font-weight:400;font-size:clamp(1.6rem,9vw,2.4rem);line-height:1;text-align:center;padding:6px 0 4px;color:#fff}
+.hdr b:nth-child(1){background:#0a8f3c}.hdr b:nth-child(2){background:#e0267a}.hdr b:nth-child(3){background:var(--blue)}.hdr b:nth-child(4){background:#111;color:var(--yel)}.hdr b:nth-child(5){background:var(--red)}
+.sq{aspect-ratio:1;font-family:inherit;font-size:clamp(.58rem,2.7vw,.74rem);font-weight:800;line-height:1.1;padding:12px 2px 2px;border-radius:0;border:0;background:#fff;color:var(--ink);box-shadow:none;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;text-transform:none;letter-spacing:0;overflow-wrap:normal;hyphens:none}
+.sq em{position:absolute;top:2px;left:4px;font-style:normal;font-size:.62rem;font-weight:800;opacity:.65}
+.sq:active{transform:none;background:#fff6cc;box-shadow:none}.sq:hover{background:#fff6cc}
+.sq.done::after{content:"";position:absolute;inset:4px;border-radius:50%;border:3px solid var(--red);background:rgba(206,17,38,.3);pointer-events:none}
+.sq.done::before{content:"✓";position:absolute;top:0;right:3px;color:var(--red);font-size:.9rem;font-weight:900}
+.sq.free span{display:flex;align-items:center;justify-content:center;width:86%;aspect-ratio:1;border:2.5px solid var(--line);border-radius:50%;font-family:var(--slab);font-size:.7rem;font-weight:400;letter-spacing:.5px;padding:0}
+.sq.free{padding:2px}.sq.free em{top:auto;left:auto;right:3px;bottom:1px;font-size:.8rem;opacity:1}
+.sq.win{background:#fff3a8;animation:w .8s steps(2) infinite}@keyframes w{50%{background:#fff}}
+dialog{border:4px solid var(--line);border-radius:10px;max-width:92vw;width:440px;background:#fffaf0;color:var(--ink);padding:18px;box-shadow:6px 6px 0 var(--line)}dialog::backdrop{background:rgba(17,17,17,.65)}
+video,img.pv{width:100%;border:3px solid var(--line);border-radius:6px;background:#000}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+input{width:100%;font:inherit;padding:8px 10px;border-radius:6px;border:2px solid var(--line);background:#fff;color:var(--ink);margin-bottom:5px}
+.bar{height:16px;background:#fff;border:3px solid var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--red) 0 8px,#e8485a 8px 16px);width:0;transition:width .5s}
+#prog{font-weight:800;margin:10px 0 6px}
+.hide{display:none}.conf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}.conf b{position:absolute;top:-20px;font-size:1.6rem;animation:f 2.5s linear forwards}@keyframes f{to{transform:translateY(110vh) rotate(540deg)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body><main>
+<div id="timer" role="timer" aria-live="off">Connecting…</div>
+<section id="land" class="card hide"><h1>🎉 Human Bingo</h1>
+<p>Find people who match each square, ask permission, snap a selfie together, and fill a line before time runs out!</p>
+<p><small>🔒 No account needed. Selfies stay on your phone — nothing is uploaded. Always ask the other person's consent first.</small></p>
+<button id="start" style="font-size:1.2rem;width:100%">Start Playing</button></section>
+<div class="flags" aria-hidden="true"></div><section id="play"><div class="card"><h1>HUMAN <span>BINGO</span></h1><div class="sub">SCHOOL OF COMPUTING <span>&lt;/&gt;</span> <code>01001000 01000010</code></div><small>Hanapin, kumustahin, at magpa-selfie! Tap a square, find a match, ask permission, and snap a selfie together. Selfies stay on your phone.</small><div id="prog">0 of 24 completed</div><div class="bar"><i id="fill"></i></div><small id="msg"></small></div>
+<div class="sheet"><div class="hdr" aria-hidden="true"><b>B</b><b>I</b><b>N</b><b>G</b><b>O</b></div><div id="grid" class="grid" role="grid" aria-label="Bingo card"></div></div></section>
+<section id="admin" class="card hide"><h2>🔐 Host Dashboard</h2><div id="astat"></div>
+<div class="row"><button id="go" class="red">START 10-MINUTE TIMER</button><button id="reset" class="alt">Reset</button></div>
+<h3>Prompts (center stays FREE)</h3><div id="plist"></div><div class="row"><button id="save">Save prompts</button><button id="prev" class="alt">Preview card</button></div><small id="amsg"></small></section>
+<p id="adminLink" class="hide" style="text-align:center"><button class="alt" id="toAdmin">Host login</button></p>
+</main>
+<dialog id="dlg" aria-label="Prompt"><h3 id="dp"></h3><p id="di">Find someone who matches this, ask their permission, then take a selfie together.</p>
+<div id="cam" class="hide"><video id="vid" playsinline muted></video><div class="row"><button id="snap">📸 Capture</button><button id="flip" class="alt">Switch camera</button></div></div>
+<div id="pvw" class="hide"><img id="pv" class="pv" alt="Selfie preview"><div class="row"><button id="ok">✓ Confirm</button><button id="retake" class="alt">Retake</button><button id="dl" class="alt">Download Selfie</button></div></div>
+<p id="err" style="color:var(--acc)"></p><input id="file" type="file" accept="image/*" capture="user" class="hide">
+<div class="row"><button id="take">Take a Selfie</button><button id="x" class="alt">Close</button></div></dialog>
+<dialog id="win"><h2>🎉 BINGO! Sigaw na!</h2><p id="wt"></p><button id="wc">Keep playing</button></dialog>
+<script>
+const DEF=["Same birthday","Polyglot","Musician","Went abroad","Can dance","Same fave color","Baby of family","Quirky hobby","Met a star","Same music taste","Hidden talent","Same fave food","Joined a contest","Morning person","Has a pet","Movie tip","Birth month twin","Fun fact","Tried odd food","Same hobby","Wants a new skill","School club","Loves nature","Same dream job"];
+const ICONS=["🎂","🗣️","🎸","✈️","💃","🎨","👶","🧩","🌟","🎧","✨","🍜","🏆","🌅","🐶","🎬","📅","💡","🍣","🎯","📚","🏫","🏕️","💼"];
+const $=id=>document.getElementById(id),DUR=600000;
+let prompts=DEF.slice(),state={status:"waiting"},done={},lines=0,cur=-1,stream,blob,facing="user",db,isAdmin=false,gdoc,pdoc,off=0;
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+done=ls.get("hb-done")||{};
+const cells=()=>prompts.slice(0,12).concat(["FREE SPACE"],prompts.slice(12,24));const num=i=>{const r=Math.floor(i/5),c=i%5;return c*15+1+((r*7+c*3)%15)};const icon=i=>i===12?"🦊":ICONS[i<12?i:i-1]||"⭐";
+const phase=()=>{if(state.status!=="running")return"WAITING";return Date.now()+off>=state.startedAt+DUR?"FINISHED":"RUNNING"};
+const WINS=[...[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>r*5+c)),...[0,1,2,3,4].map(c=>[0,1,2,3,4].map(r=>r*5+c)),[0,6,12,18,24],[4,8,12,16,20]];
+const isDone=i=>i===12||done[i];const winLines=()=>WINS.filter(l=>l.every(isDone));
+function render(){const g=$("grid");g.textContent="";cells().forEach((t,i)=>{const b=document.createElement("button");b.className="sq"+(i===12?" free":"")+(isDone(i)&&i!==12?" done":"");
+{const e=document.createElement("em");e.textContent=i===12?"🦊":num(i);const sp=document.createElement("span");sp.textContent=i===12?"FREE":t;b.append(e,sp)}b.setAttribute("aria-label",t+(i===12?" (free)":isDone(i)?" — completed":" — not completed"));if(winLines().some(l=>l.includes(i)))b.classList.add("win");
+b.onclick=()=>open(i);g.appendChild(b)});const n=Object.keys(done).length;$("prog").textContent=n+" of 24 completed";$("fill").style.width=n/24*100+"%";
+$("msg").textContent=n===24?"🏆 Full card!":winLines().length?winLines().length+" bingo line(s)!":""}
+function tick(){const t=$("timer"),p=phase();let s;if(p==="WAITING"){s="⏳ Waiting for the host to start";t.className=""}
+else if(p==="RUNNING"){const r=Math.max(0,state.startedAt+DUR-(Date.now()+off));const m=Math.floor(r/60000),sc=Math.floor(r/1000)%60;s="⏱ "+String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");t.className=r<60000?"run low":"run"}
+else{s="TIME'S UP!";t.className="low"}t.textContent=s;
+if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Final: "+Object.keys(done).length+" of 24 squares, "+winLines().length+" bingo line(s).";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
+if(isAdmin)$("astat").textContent="Status: "+p+(p==="RUNNING"?" — "+$("timer").textContent:"");$("go").disabled=p!=="WAITING"}
+setInterval(tick,250);render();
+function open(i){if(i===12||isDone(i))return;if(phase()!=="RUNNING"){alert(phase()==="FINISHED"?"Time's up!":"Waiting for the host to start the game.");return}
+cur=i;$("dp").textContent="BINGO"[i%5]+"-"+num(i)+": "+cells()[i];$("err").textContent="";$("cam").className=$("pvw").className="hide";$("take").className="";$("dlg").showModal()}
+async function startCam(){$("err").textContent="";try{stopCam();stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing},audio:false});const v=$("vid");v.srcObject=stream;await v.play();$("cam").className="";$("take").className="hide"}
+catch(e){$("err").textContent="Camera unavailable or blocked. Allow camera access in your browser settings, or use the photo picker.";$("file").click()}}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+function show(b){blob=b;$("pv").src=URL.createObjectURL(b);$("cam").className="hide";$("pvw").className="";stopCam()}
+$("take").onclick=startCam;$("flip").onclick=()=>{facing=facing==="user"?"environment":"user";startCam()};
+$("snap").onclick=()=>{const v=$("vid"),c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);c.toBlob(show,"image/jpeg",.9)};
+$("file").onchange=e=>{if(e.target.files[0])show(e.target.files[0])};
+$("retake").onclick=()=>{$("pvw").className="hide";startCam()};
+$("dl").onclick=async()=>{const name="human-bingo-"+(cur+1)+".jpg";try{const d=await claude.use("downloads");if(d){await d.save({filename:name,data:blob});return}}catch(e){}
+const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();$("err").textContent="If nothing downloaded, long-press the photo above and choose Save Image."};
+$("ok").onclick=()=>{if(phase()!=="RUNNING"){$("err").textContent="Time's up — can't confirm now.";return}const before=winLines().length;done[cur]=1;ls.set("hb-done",done);$("dlg").close();render();if(winLines().length>before)cheer()};
+$("x").onclick=()=>{stopCam();$("dlg").close()};$("dlg").onclose=stopCam;
+function cheer(){$("wt").textContent=Object.keys(done).length===24?"You completed the whole card!":"You completed a line! Keep going for more.";$("win").showModal();const c=document.createElement("div");c.className="conf";
+for(let i=0;i<30;i++){const b=document.createElement("b");b.textContent=["🎉","⭐","🎊","✨"][i%4];b.style.left=Math.random()*100+"%";b.style.animationDelay=Math.random()+"s";c.appendChild(b)}document.body.appendChild(c);setTimeout(()=>c.remove(),4000)}
+$("wc").onclick=()=>$("win").close();
+$("start").onclick=()=>{$("land").className="hide";$("play").className="";render()};
+function plist(){const p=$("plist");p.textContent="";prompts.forEach((t,i)=>{const e=document.createElement("input");e.value=t;e.setAttribute("aria-label","Prompt "+(i+1));e.oninput=()=>prompts[i]=e.value;p.appendChild(e)})}
+$("prev").onclick=()=>{$("land").className="hide";$("play").className="";render()};
+let pw=sessionStorage.getItem("hb-pw")||"";
+async function api(path,opt){const r=await fetch(path,opt);if(!r.ok)throw new Error(r.status);return r.json()}
+const adminCall=(action,extra)=>api("/api/admin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw,action,...(extra||{})})});
+async function poll(){try{const d=await api("/api/state?t="+Date.now());off=d.now-Date.now();state=d.status==="running"?{status:"running",startedAt:d.startedAt}:{status:"waiting"};
+if(!isAdmin&&Array.isArray(d.prompts)&&d.prompts.length===24&&JSON.stringify(d.prompts)!==JSON.stringify(prompts)){prompts=d.prompts;render()}tick()}catch(e){$("timer").textContent="Reconnecting…"}}
+$("go").onclick=async()=>{if(!confirm("Start the 10-minute timer for everyone?"))return;try{await adminCall("start");$("amsg").textContent="";poll()}catch(e){$("amsg").textContent="Could not start (already running or wrong password)."}};
+$("reset").onclick=async()=>{if(!confirm("Reset the activity for everyone?"))return;try{await adminCall("reset");poll()}catch(e){$("amsg").textContent="Reset failed."}};
+$("save").onclick=async()=>{try{await adminCall("prompts",{prompts});$("amsg").textContent="Saved ✓"}catch(e){$("amsg").textContent="Save failed."}};
+function enterAdmin(){isAdmin=true;$("admin").className="card";plist()}
+$("toAdmin").onclick=async()=>{if(isAdmin){$("admin").classList.toggle("hide");return}const x=prompt("Host password");if(!x)return;pw=x;try{await adminCall("check");sessionStorage.setItem("hb-pw",pw);enterAdmin()}catch(e){pw="";alert("Wrong password")}};
+(async()=>{$("adminLink").className="";if(pw){try{await adminCall("check");enterAdmin()}catch(e){pw="";sessionStorage.removeItem("hb-pw")}}poll();setInterval(poll,2000)})();
+</script></body></html>
