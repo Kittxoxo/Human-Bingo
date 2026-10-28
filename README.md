@@ -1,2 +1,4 @@
 # Human Bingo (Vercel)
-Deploy steps are in the chat. Env var needed: ADMIN_PASSWORD. Database: Upstash Redis from Vercel Storage/Marketplace.
+- public/index.html  -> the game page (participants + host login)
+- api/*.js           -> serverless functions (timer, photos, host actions)
+Env var you add yourself: ADMIN_PASSWORD. Database: Upstash Redis (Vercel Storage), variables added automatically.

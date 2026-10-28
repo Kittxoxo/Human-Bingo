@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const { getJSON, setJSON } = require("./_redis");
+const { cmd, getJSON, setJSON } = require("./_redis");
 
 const DURATION = 10 * 60 * 1000;
 
@@ -11,6 +11,16 @@ function okPassword(given) {
   return crypto.timingSafeEqual(a, b);
 }
 
+async function clearPhotos() {
+  const ids = await cmd(["LRANGE", "hb:photos", 0, -1]);
+  for (let k = 0; k < ids.length; k += 100) {
+    const keys = [];
+    ids.slice(k, k + 100).forEach((id) => keys.push("hb:t:" + id, "hb:f:" + id));
+    await cmd(["DEL", ...keys]);
+  }
+  await cmd(["DEL", "hb:photos", "hb:ids"]);
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ error: "method" });
@@ -19,25 +29,39 @@ module.exports = async (req, res) => {
 
   try {
     const state = await getJSON("hb:state", { status: "waiting" });
-    if (body.action === "check") return res.status(200).json({ ok: true });
-
-    if (body.action === "start") {
-      if (state.status === "running") return res.status(409).json({ error: "already started" });
-      await setJSON("hb:state", { status: "running", startedAt: Date.now(), duration: DURATION });
-      return res.status(200).json({ ok: true });
+    switch (body.action) {
+      case "check":
+        return res.status(200).json({ ok: true });
+      case "start":
+        if (state.status === "running") return res.status(409).json({ error: "already started" });
+        await clearPhotos(); // a new round starts with an empty collage
+        await setJSON("hb:state", { status: "running", startedAt: Date.now(), duration: DURATION });
+        return res.status(200).json({ ok: true });
+      case "reset":
+        await setJSON("hb:state", { status: "waiting" });
+        return res.status(200).json({ ok: true });
+      case "prompts": {
+        const p = body.prompts;
+        if (!Array.isArray(p) || p.length !== 24 || !p.every((x) => typeof x === "string" && x.length <= 40))
+          return res.status(400).json({ error: "bad prompts" });
+        await setJSON("hb:prompts", p);
+        return res.status(200).json({ ok: true });
+      }
+      case "photos": { // host-only: the bigger 400px pictures, for the zip download
+        const cursor = Math.max(0, parseInt(body.cursor, 10) || 0);
+        const limit = Math.min(20, Math.max(1, parseInt(body.limit, 10) || 20));
+        const ids = await cmd(["LRANGE", "hb:photos", cursor, cursor + limit - 1]);
+        if (!ids.length) return res.status(200).json({ items: [], next: null });
+        const vals = await cmd(["MGET", ...ids.map((id) => "hb:f:" + id)]);
+        const items = ids.map((id, k) => ({ id, src: vals[k] })).filter((x) => x.src);
+        return res.status(200).json({ items, next: ids.length === limit ? cursor + limit : null });
+      }
+      case "clearphotos":
+        await clearPhotos();
+        return res.status(200).json({ ok: true });
+      default:
+        return res.status(400).json({ error: "bad action" });
     }
-    if (body.action === "reset") {
-      await setJSON("hb:state", { status: "waiting" });
-      return res.status(200).json({ ok: true });
-    }
-    if (body.action === "prompts") {
-      const p = body.prompts;
-      if (!Array.isArray(p) || p.length !== 24 || !p.every((x) => typeof x === "string" && x.length <= 40))
-        return res.status(400).json({ error: "bad prompts" });
-      await setJSON("hb:prompts", p);
-      return res.status(200).json({ ok: true });
-    }
-    return res.status(400).json({ error: "bad action" });
   } catch (e) {
     return res.status(500).json({ error: "server" });
   }

@@ -1,17 +1,22 @@
-const { getJSON } = require("./_redis");
+const { pipe } = require("./_redis");
 
 module.exports = async (req, res) => {
-  res.setHeader("Cache-Control", "no-store");
+  // Cached for 2s at Vercel's edge so 100 phones polling = ~1 database read per 2s.
+  res.setHeader("Cache-Control", "public, s-maxage=2, stale-while-revalidate=3");
   try {
-    const state = await getJSON("hb:state", { status: "waiting" });
-    const prompts = await getJSON("hb:prompts", null);
+    const [[st, pr], photos] = await pipe([
+      ["MGET", "hb:state", "hb:prompts"],
+      ["LLEN", "hb:photos"],
+    ]);
+    const state = st ? JSON.parse(st) : { status: "waiting" };
     res.status(200).json({
       status: state.status,
       startedAt: state.startedAt || null,
-      prompts,
-      now: Date.now(), // server clock: every phone syncs to this
+      prompts: pr ? JSON.parse(pr) : null,
+      photos: photos || 0,
     });
   } catch (e) {
+    res.setHeader("Cache-Control", "no-store");
     res.status(500).json({ error: "server" });
   }
 };
