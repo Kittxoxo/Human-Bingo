@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
     res.status(200).json({
       status: state.status,
       startedAt: state.startedAt || null,
+      duration: state.duration || 600000,
       prompts: pr ? JSON.parse(pr) : null,
       photos: photos || 0,
     });

@@ -18,7 +18,7 @@ async function clearPhotos() {
     ids.slice(k, k + 100).forEach((id) => keys.push("hb:t:" + id, "hb:f:" + id));
     await cmd(["DEL", ...keys]);
   }
-  await cmd(["DEL", "hb:photos", "hb:ids"]);
+  await cmd(["DEL", "hb:photos", "hb:ids", "hb:prog"]);
 }
 
 module.exports = async (req, res) => {
@@ -34,8 +34,25 @@ module.exports = async (req, res) => {
         return res.status(200).json({ ok: true });
       case "start":
         if (state.status === "running") return res.status(409).json({ error: "already started" });
-        await clearPhotos(); // a new round starts with an empty collage
-        await setJSON("hb:state", { status: "running", startedAt: Date.now(), duration: DURATION });
+        {
+          const mins = body.minutes == null ? 10 : Math.round(Number(body.minutes));
+          if (!(mins >= 1 && mins <= 120)) return res.status(400).json({ error: "minutes 1-120" });
+          await clearPhotos(); // a new round starts with an empty collage and live board
+          await setJSON("hb:state", { status: "running", startedAt: Date.now(), duration: mins * 60000 });
+          return res.status(200).json({ ok: true });
+        }
+      case "adjust": { // add or remove time while a round exists
+        if (state.status !== "running") return res.status(409).json({ error: "not running" });
+        const d = Number(body.delta);
+        if (!Number.isFinite(d) || Math.abs(d) > 60 * 60 * 1000) return res.status(400).json({ error: "delta" });
+        state.duration = Math.min(4 * 60 * 60 * 1000, Math.max(10000, (state.duration || DURATION) + d));
+        await setJSON("hb:state", state);
+        return res.status(200).json({ ok: true, duration: state.duration });
+      }
+      case "endnow":
+        if (state.status !== "running") return res.status(409).json({ error: "not running" });
+        state.duration = Math.max(1000, Date.now() - state.startedAt);
+        await setJSON("hb:state", state);
         return res.status(200).json({ ok: true });
       case "reset":
         await setJSON("hb:state", { status: "waiting" });

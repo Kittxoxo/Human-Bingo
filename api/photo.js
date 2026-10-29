@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
 
     const state = await getJSON("hb:state", { status: "waiting" });
     const now = Date.now();
-    if (state.status !== "running" || now < state.startedAt || now > state.startedAt + DURATION + GRACE)
+    if (state.status !== "running" || now < state.startedAt || now > state.startedAt + (state.duration || DURATION) + GRACE)
       return res.status(403).json({ error: "round closed" });
 
     const id = pid + ":" + i;
