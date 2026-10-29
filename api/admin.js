@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
           const mins = body.minutes == null ? 10 : Math.round(Number(body.minutes));
           if (!(mins >= 1 && mins <= 120)) return res.status(400).json({ error: "minutes 1-120" });
           await clearPhotos(); // a new round starts with an empty collage and live board
-          await setJSON("hb:state", { status: "running", startedAt: Date.now(), duration: mins * 60000 });
+          await setJSON("hb:state", { status: "running", startedAt: Date.now(), duration: mins * 60000, resetAt: state.resetAt || 0 });
           return res.status(200).json({ ok: true });
         }
       case "adjust": { // add or remove time while a round exists
@@ -54,8 +54,9 @@ module.exports = async (req, res) => {
         state.duration = Math.max(1000, Date.now() - state.startedAt);
         await setJSON("hb:state", state);
         return res.status(200).json({ ok: true });
-      case "reset":
-        await setJSON("hb:state", { status: "waiting" });
+      case "reset": // wipes everything: phones clear their cards when they see the new resetAt
+        await clearPhotos();
+        await setJSON("hb:state", { status: "waiting", resetAt: Date.now() });
         return res.status(200).json({ ok: true });
       case "prompts": {
         const p = body.prompts;

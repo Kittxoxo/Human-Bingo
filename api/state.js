@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
       status: state.status,
       startedAt: state.startedAt || null,
       duration: state.duration || 600000,
+      resetAt: state.resetAt || 0,
       prompts: pr ? JSON.parse(pr) : null,
       photos: photos || 0,
     });
