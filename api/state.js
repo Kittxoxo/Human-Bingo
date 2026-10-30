@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
       startedAt: state.startedAt || null,
       duration: state.duration || 600000,
       resetAt: state.resetAt || 0,
+      showcase: state.showcase || { open: false, rank: 1 },
       prompts: pr ? JSON.parse(pr) : null,
       photos: photos || 0,
     });

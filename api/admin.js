@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { cmd, pipe, getJSON, setJSON } = require("./_redis");
+const { parsePlayers } = require("./_rank");
 
 const DURATION = 10 * 60 * 1000;
 
@@ -18,7 +19,7 @@ async function clearPhotos() {
     ids.slice(k, k + 100).forEach((id) => keys.push("hb:t:" + id, "hb:f:" + id));
     await cmd(["DEL", ...keys]);
   }
-  await cmd(["DEL", "hb:photos", "hb:ids", "hb:prog", "hb:full", "hb:winners"]);
+  await cmd(["DEL", "hb:photos", "hb:ids", "hb:prog"]);
 }
 
 module.exports = async (req, res) => {
@@ -46,6 +47,7 @@ module.exports = async (req, res) => {
         const d = Number(body.delta);
         if (!Number.isFinite(d) || Math.abs(d) > 60 * 60 * 1000) return res.status(400).json({ error: "delta" });
         state.duration = Math.min(4 * 60 * 60 * 1000, Math.max(10000, (state.duration || DURATION) + d));
+        state.showcase = { open: false, rank: 1 };
         await setJSON("hb:state", state);
         return res.status(200).json({ ok: true, duration: state.duration });
       }
@@ -74,17 +76,19 @@ module.exports = async (req, res) => {
         const items = ids.map((id, k) => ({ id, src: vals[k] })).filter((x) => x.src);
         return res.status(200).json({ items, next: ids.length === limit ? cursor + limit : null });
       }
-      case "board": { // host-only live board: names, progress, who finished first
-        const [flat, wins, photos] = await pipe([["HGETALL", "hb:prog"], ["LRANGE", "hb:winners", 0, -1], ["LLEN", "hb:photos"]]);
-        const players = [];
-        for (let k = 0; k + 1 < (flat || []).length; k += 2) {
-          let v = {};
-          try { v = JSON.parse(flat[k + 1]); } catch (e) {}
-          players.push({ pid: flat[k], name: v.n || "Player", mask: v.m || 0 });
-        }
-        const names = Object.fromEntries(players.map((p) => [p.pid, p.name]));
-        const winners = (wins || []).map((w) => JSON.parse(w)).map((w) => ({ ...w, name: names[w.pid] || "Player" }));
-        return res.status(200).json({ status: state.status, startedAt: state.startedAt || null, duration: state.duration || DURATION, players, winners, photos: photos || 0 });
+      case "board": { // host-only live board: names, progress, tie-break times
+        const [flat, photos] = await pipe([["HGETALL", "hb:prog"], ["LLEN", "hb:photos"]]);
+        const players = parsePlayers(flat).map((p) => ({ pid: p.pid, name: p.name, mask: p.mask, t: p.t }));
+        return res.status(200).json({ status: state.status, startedAt: state.startedAt || null, duration: state.duration || DURATION, players, photos: photos || 0 });
+      }
+      case "showcase": { // open/close the winners showcase for everyone, and pick which place is shown
+        const r = Number(body.rank);
+        if (!Number.isInteger(r) || r < 1 || r > 5) return res.status(400).json({ error: "rank 1-5" });
+        const finished = state.status === "running" && Date.now() >= state.startedAt + (state.duration || DURATION);
+        if (!finished) return res.status(409).json({ error: "round not finished" });
+        state.showcase = { open: body.open !== false, rank: r };
+        await setJSON("hb:state", state);
+        return res.status(200).json({ ok: true });
       }
       case "thumbs": { // host-only: small pictures for the live board (cached by the page)
         const ids = Array.isArray(body.ids) ? body.ids.slice(0, 60) : [];

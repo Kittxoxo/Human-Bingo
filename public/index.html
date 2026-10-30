@@ -64,7 +64,20 @@ video,img.pv{width:100%;border-radius:16px;background:#000}.row{display:flex;gap
 .mini i.f{background:linear-gradient(160deg,#ffb347,#f26a1f)}.mini i.d{background:#f26a1f}.mini i.d::after{content:"✓";color:#fff;font-weight:900}.mini i.p{box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}.mini i.w{outline:2px solid #ffb347;outline-offset:-2px}.mini i.n{animation:flash .9s}
 @keyframes flash{from{transform:scale(2.4);position:relative;z-index:2;filter:brightness(1.6)}}
 #lbig .pc{box-shadow:none;cursor:default}#lbig .mini{gap:5px}#lbig{width:min(94vw,560px)}
-.hide,.fin.hide,.live.hide{display:none}
+.show{position:fixed;inset:0;z-index:120;overflow:auto;background:radial-gradient(60% 50% at 15% 10%,#f26a1f 0,transparent 65%),radial-gradient(80% 40% at 50% 105%,#ffd77a 0,transparent 70%),linear-gradient(165deg,#c92a0e,#e5521a 60%,#f58a2a);color:#fff}
+.shin{display:flex;flex-direction:column;align-items:center;padding:18px 10px 30px;min-height:100%}
+#shrank{font-family:var(--hd);font-size:clamp(2.2rem,11vw,3.4rem);text-transform:uppercase;letter-spacing:-.04em;line-height:1;margin-top:10px;text-align:center;text-shadow:0 6px 22px rgba(60,5,0,.45)}
+#shname{font-family:var(--hd);font-size:clamp(1.2rem,6vw,1.9rem);text-transform:uppercase;letter-spacing:-.02em;margin-top:6px;text-align:center}
+#shcount{font-weight:800;margin:4px 0 6px;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem}
+.shsheet{width:min(94vw,520px);margin:18px 0 14px}
+#shgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.sc{aspect-ratio:1;position:relative;border:0;padding:0;margin:0;border-radius:10px;overflow:hidden;background:#f3e3d8;box-shadow:none;font-size:1.4rem;display:flex;align-items:center;justify-content:center;cursor:default}
+.sc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}.sc.has{cursor:pointer}.sc.has img{display:block}
+.sc .n{position:absolute;top:3px;left:5px;font-size:.62rem;font-weight:800;color:#8a6a5a;z-index:1}.sc.has .n{color:#fff;text-shadow:0 0 3px #000}
+.sc.d{background:#f26a1f}.sc.free{background:linear-gradient(160deg,#ffb347,#f26a1f)}
+.chips{display:flex;gap:8px;margin:6px 0 12px}.chips button{padding:9px 17px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.8);box-shadow:none}.chips button.on{background:#fff;color:var(--red)}.chips.ro button{pointer-events:none}.chips button:disabled{opacity:.35}
+#shctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:6px}#shctl.hide{display:none}
+.hide,.fin.hide,.live.hide,.show.hide{display:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head><body><canvas id="bg" aria-hidden="true"></canvas><main>
@@ -74,19 +87,27 @@ video,img.pv{width:100%;border-radius:16px;background:#000}.row{display:flex;gap
 <section id="reg" class="hide"><h1>Human<br>Bingo</h1><div class="sub">School of Computing</div>
 <div class="card"><div class="lbl">Mechanics</div><ol class="mech"><li>Complete all the boxes on your Human Bingo card.</li><li>The first five (5) participants to complete their cards will win a prize.</li><li>Shout “BINGO!” once finished and present your card for verification.</li><li>Only one selfie per box is allowed. Always ask the person for permission first.</li></ol></div>
 <div class="card"><label class="lbl" for="rname">Enter your name</label><input id="rname" type="text" maxlength="24" autocomplete="off" placeholder="First name and surname">
-<label class="chk"><input type="checkbox" id="rok"><span>I agree to share my name and selfies with the host (live board) and in the end-of-game collage.</span></label>
+<label class="chk"><input type="checkbox" id="rok"><span>I agree to share my name and selfies with the host (live board) and, if I place in the top 5, on the winners showcase.</span></label>
 <button id="rgo" disabled style="width:100%">Start playing</button></div></section>
 <section id="play" class="hide"><h1>Human Bingo</h1><div class="sub">School of Computing</div>
 <div class="card"><div id="whoami"></div><div id="prog">0 of 24 completed</div><div class="bar"><i id="fill"></i></div><div class="hint" id="msg" style="margin-top:8px">Tap a box, find the matching person, ask permission, and take a selfie together.</div></div>
+<div id="fcard" class="card hide"><div class="lbl">Final card</div><div id="fctext" style="font-weight:800;line-height:1.4"></div></div>
 <div class="sheet"><div class="hdr" aria-hidden="true"><b>B</b><b>I</b><b>N</b><b>G</b><b>O</b></div><div id="grid" class="grid" role="grid" aria-label="Bingo card"></div></div>
 <div class="row" style="justify-content:center"><button id="savecard">💾 Save my card</button></div></section>
 <section id="admin" class="card hide"><h2>🔐 Host Dashboard</h2><div class="row" style="margin:0 0 8px"><button id="toLive">📺 Open live board</button></div><div id="astat"></div>
 <div class="row" style="align-items:center"><label for="mins" style="font-weight:800">Minutes</label><input id="mins" type="number" min="1" max="120" value="10" style="width:84px;margin:0"><button id="go" class="red">START TIMER</button><button id="reset" class="alt">Reset</button></div>
-<div class="row"><b style="width:100%">Add or remove time</b><button class="alt adj" data-ms="-300000">−5 min</button><button class="alt adj" data-ms="-60000">−1 min</button><button class="alt adj" data-ms="-30000">−30 s</button><button class="alt adj" data-ms="30000">+30 s</button><button class="alt adj" data-ms="60000">+1 min</button><button class="alt adj" data-ms="300000">+5 min</button><button id="endnow" class="red">End now</button></div><div class="row"><button id="zip" class="alt">⬇ Download all photos</button><button id="clr" class="alt">Delete all photos</button></div>
+<div class="row"><b style="width:100%">Add or remove time</b><button class="alt adj" data-ms="-300000">−5 min</button><button class="alt adj" data-ms="-60000">−1 min</button><button class="alt adj" data-ms="-30000">−30 s</button><button class="alt adj" data-ms="30000">+30 s</button><button class="alt adj" data-ms="60000">+1 min</button><button class="alt adj" data-ms="300000">+5 min</button><button id="endnow" class="red">End now</button></div><div class="row"><button id="startshow" class="red">🏆 Start winners showcase</button></div><div class="row"><button id="zip" class="alt">⬇ Download all photos</button><button id="clr" class="alt">Delete all photos</button></div>
 <h3>Prompts (center stays FREE)</h3><div id="plist"></div><div class="row"><button id="save">Save prompts</button><button id="prev" class="alt">Preview card</button></div><small id="amsg"></small></section>
 <p id="adminLink" class="hide" style="text-align:center"><button class="alt" id="toAdmin">Host login</button></p>
 </main>
-<div id="live" class="live hide" role="dialog" aria-label="Live board"><div class="lhead"><div class="livetitle">Human Bingo<br>Live board</div><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lclose" class="alt">Close live board</button></div><div id="lwin"></div><div id="lempty" class="hide">Waiting for players to join…</div><div id="lgrid"></div></div>
+<div id="live" class="live hide" role="dialog" aria-label="Live board"><div class="lhead"><div class="livetitle">Human Bingo<br>Live board</div><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lshow" class="alt">🏆 Winners showcase</button><button id="lclose" class="alt">Close live board</button></div><div id="lwin"></div><div id="lempty" class="hide">Waiting for players to join…</div><div id="lgrid"></div></div>
+<div id="show" class="show hide" role="dialog" aria-label="Winners showcase"><div class="shin">
+<div class="sub" style="margin:0">🏆 Winners showcase</div><div id="shrank">&nbsp;</div><div id="shname"></div><div id="shcount"></div>
+<div class="sheet shsheet"><div id="shgrid"></div></div>
+<div id="shchips" class="chips"></div>
+<div id="shctl" class="hide"><button id="shprev" class="alt">◀ Prev</button><button id="shnext">Next ▶</button><button id="shhide" class="alt">Hide showcase</button></div>
+<div class="hint" id="shnote" style="text-align:center"></div></div></div>
+<dialog id="zoom" aria-label="Photo"><img id="zimg" alt="" style="width:100%;border-radius:14px"><div id="zcap" style="font-weight:800;text-align:center;margin:8px 0"></div><div class="row" style="justify-content:center"><button id="zx" class="alt">Close</button></div></dialog>
 <dialog id="lbig" aria-label="Player card"><div id="lbigbody"></div><div class="row"><button id="lbx" class="alt">Close</button></div></dialog>
 <dialog id="dlg" aria-label="Prompt"><h3 id="dp"></h3><p id="di">Find someone who matches this, ask their permission, then take a selfie together.</p>
 <div id="cam" class="hide"><video id="vid" playsinline muted></video><div class="row"><button id="snap">📸 Capture</button><button id="flip" class="alt">Switch camera</button><button id="mir" class="alt">Mirror: ON</button></div></div>
@@ -101,7 +122,7 @@ video,img.pv{width:100%;border-radius:16px;background:#000}.row{display:flex;gap
 const DEF=["Same birthday","Polyglot","Musician","Went abroad","Can dance","Same fave color","Baby of family","Quirky hobby","Met a star","Same music taste","Hidden talent","Same fave food","Joined a contest","Morning person","Has a pet","Movie tip","Birth month twin","Fun fact","Tried odd food","Same hobby","Wants a new skill","School club","Loves nature","Same dream job"];
 const ICONS=["🎂","🗣️","🎸","✈️","💃","🎨","👶","🧩","🌟","🎧","✨","🍜","🏆","🌅","🐶","🎬","📅","💡","🍣","🎯","📚","🏫","🏕️","💼"];
 const $=id=>document.getElementById(id);let DUR=600000;
-let prompts=DEF.slice(),state={status:"waiting"},done={},pics={},lines=0,cur=-1,stream,blob,facing="user",isAdmin=false,off=0,photosTotal=0,finDone=false,finBegun=false,FIN=15000,mirror=true,engaged=false,reported=null,liveOpen=false,liveTimer=null,myName="",wantLive=false;
+let prompts=DEF.slice(),state={status:"waiting"},done={},pics={},lines=0,cur=-1,stream,blob,facing="user",isAdmin=false,off=0,photosTotal=0,finDone=false,finBegun=false,FIN=0,mirror=true,engaged=false,reported=null,liveOpen=false,liveTimer=null,myName="",wantLive=false;
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 done=ls.get("hb-done")||{};pics=ls.get("hb-pics")||{};myName=ls.get("hb-name")||"";engaged=!!myName;let pid=ls.get("hb-pid");if(!pid){pid=Array.from(crypto.getRandomValues(new Uint8Array(10))).map(b=>(b%36).toString(36)).join("");ls.set("hb-pid",pid)}
 const cells=()=>prompts.slice(0,12).concat(["FREE SPACE"],prompts.slice(12,24));const num=i=>{const r=Math.floor(i/5),c=i%5;return c*15+1+((r*7+c*3)%15)};const icon=i=>i===12?"🦊":ICONS[i<12?i:i-1]||"⭐";
@@ -111,12 +132,12 @@ const isDone=i=>i===12||done[i];const winLines=()=>WINS.filter(l=>l.every(isDone
 function render(){const g=$("grid");g.textContent="";cells().forEach((t,i)=>{const b=document.createElement("button");b.className="sq"+(i===12?" free":"")+(isDone(i)&&i!==12?" done":"");
 {const e=document.createElement("em");e.textContent=i===12?"🦊":num(i);const sp=document.createElement("span");sp.textContent=i===12?"FREE":t;b.append(e,sp);if(pics[i]&&done[i]){const im=document.createElement("img");im.src=pics[i];im.alt="Selfie for "+t;b.prepend(im);b.classList.add("pic")}}b.setAttribute("aria-label",t+(i===12?" (free)":isDone(i)?" — completed":" — not completed"));if(winLines().some(l=>l.includes(i)))b.classList.add("win");
 b.onclick=()=>open(i);g.appendChild(b)});const n=Object.keys(done).length;$("prog").textContent=n+" of 24 completed";$("fill").style.width=n/24*100+"%";
-$("msg").textContent=phase()==="FINISHED"?"Final: "+n+" of 24 squares, "+winLines().length+" bingo line(s). Tap Save my card to keep a copy.":n===24?"🏆 Full card! Shout “BINGO!” and show your card to the host.":winLines().length?winLines().length+" bingo line(s)! Keep going — fill the whole card to win.":"Tap a box, find the matching person, ask permission, and take a selfie together."}
+$("msg").textContent=phase()==="FINISHED"?"Tap Save my card to keep a copy of your final card.":n===24?"🏆 Full card! Shout “BINGO!” and show your card to the host.":winLines().length?winLines().length+" bingo line(s)! Keep going — fill the whole card to win.":"Tap a box, find the matching person, ask permission, and take a selfie together."}
 function tick(){const t=$("timer"),p=phase();let s;if(p==="WAITING"){s="⏳ Waiting for the host to start";t.className=""}
 else if(p==="RUNNING"){const r=Math.max(0,state.startedAt+DUR-(Date.now()+off));const m=Math.floor(r/60000),sc=Math.floor(r/1000)%60;s="⏱ "+String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");t.className=r<60000?"run low":"run"}
 else{s="TIME'S UP!";t.className="low"}t.textContent=s;
-if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Final: "+Object.keys(done).length+" of 24 squares, "+winLines().length+" bingo line(s). Tap Save my card to keep a copy.";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
-if(isAdmin)$("astat").textContent="Status: "+p+(p==="RUNNING"?" — "+$("timer").textContent:"")+" • Total time: "+Math.round(DUR/6000)/10+" min • Photos collected: "+photosTotal;$("go").disabled=p!=="WAITING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p)}
+if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Tap Save my card to keep a copy of your final card.";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
+if(isAdmin)$("astat").textContent="Status: "+p+(p==="RUNNING"?" — "+$("timer").textContent:"")+" • Total time: "+Math.round(DUR/6000)/10+" min • Photos collected: "+photosTotal;$("go").disabled=p!=="WAITING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
 function finale(p){const fin=$("fin");if(p!=="FINISHED"){finDone=false;finBegun=false;fin.classList.add("hide");return}
 if(finDone)return;const since=Date.now()+off-(state.startedAt+DUR);
 if(since>=FIN){finDone=true;fin.classList.add("hide");return}
@@ -153,7 +174,7 @@ if(on&&t){if(x.dataset.k!==key){x.style.backgroundImage="url("+t+")";x.dataset.k
 else if(on){x.style.backgroundImage="";delete x.dataset.k;x.className="d"}
 else{x.style.backgroundImage="";delete x.dataset.k;x.className=""}
 if(on&&win.has(i))x.classList.add("w");if(on&&k.seen&&!((k.mask>>i)&1))x.classList.add("n")}
-k.mask=p.mask;k.seen=true;k.sm.textContent=bits(p.mask)+"/24"+(rank?" • FULL CARD":lines.length?" • "+lines.length+" line"+(lines.length>1?"s":""):"")}
+k.mask=p.mask;k.seen=true;k.sm.textContent=bits(p.mask)+"/24"+(rank?(bits(p.mask)===24?" • FULL CARD":" • #"+rank):lines.length?" • "+lines.length+" line"+(lines.length>1?"s":""):"")}
 function repaint(){for(const p of lastPlayers){const k=cardEls.get(p.pid);if(k)paintCard(k,p,lastRk.get(p.pid)||0)}}
 async function fetchMissing(ps){if(fetching)return;const need=[];
 for(const p of ps)for(let i=0;i<25;i++){if(i===12||!((p.mask>>i)&1))continue;const key=p.pid+":"+i;if(thumbs.has(key)||inflight.has(key))continue;if(Date.now()-(missAt.get(key)||0)<5000)continue;need.push(key)}
@@ -161,13 +182,14 @@ if(!need.length)return;fetching=true;
 try{for(let k=0;k<need.length;k+=40){const batch=need.slice(k,k+40);batch.forEach(x=>inflight.add(x));
 try{const r=await adminCall("thumbs",{ids:batch});const got=new Set();for(const it of r.items){thumbs.set(it.id,it.src);got.add(it.id)}batch.forEach(x=>{if(!got.has(x))missAt.set(x,Date.now())})}catch(e){batch.forEach(x=>missAt.set(x,Date.now()))}
 batch.forEach(x=>inflight.delete(x));repaint()}}finally{fetching=false}}
-function renderBoard(d){const g=$("lgrid"),rk=new Map(d.winners.map((w,i)=>[w.pid,i+1]));lastPlayers=d.players;lastRk=rk;
-const ps=d.players.slice().sort((a,b)=>(rk.get(a.pid)||999)-(rk.get(b.pid)||999)||bits(b.mask)-bits(a.mask)||a.name.localeCompare(b.name));
+const cmpRank=(a,b)=>bits(b.mask)-bits(a.mask)||(a.t||0)-(b.t||0)||a.name.localeCompare(b.name);
+function renderBoard(d){const g=$("lgrid"),fin=phase()==="FINISHED",ps=d.players.slice().sort(cmpRank),rk=new Map();
+ps.forEach((p,i)=>{const c=bits(p.mask);if(i<5&&c>0&&(fin||c===24))rk.set(p.pid,i+1)});lastPlayers=d.players;lastRk=rk;
 const ids=new Set(ps.map(p=>p.pid));for(const[pid,k]of[...cardEls])if(!ids.has(pid)){k.el.remove();cardEls.delete(pid)}
 ps.forEach((p,idx)=>{let k=cardEls.get(p.pid);if(!k){k=mkCard();k.el.onclick=()=>bigCard(p.pid);cardEls.set(p.pid,k);g.appendChild(k.el)}k.el.style.order=idx;const r=rk.get(p.pid)||0;k.el.classList.toggle("full",r>0);paintCard(k,p,r)});
 $("lempty").className=ps.length?"hide":"";
-const top=d.winners.slice(0,5).map((w,i)=>(i+1)+". "+w.name+" ("+fmtT(w.t-d.startedAt)+")");
-$("lwin").textContent=top.length?"🏆 FIRST TO COMPLETE:  "+top.join("   •   "):"🏆 Waiting for the first full card…";
+const top=ps.filter(p=>rk.has(p.pid)).map((p,i)=>(i+1)+". "+p.name+" ("+(fin?bits(p.mask)+"/24":fmtT((p.t||0)-d.startedAt))+")");
+$("lwin").textContent=top.length?(fin?"🏆 FINAL TOP 5:  ":"🏆 FIRST TO COMPLETE:  ")+top.join("   •   "):"🏆 Waiting for the first full card…";
 $("lstat").textContent=ps.length+" players • "+ps.reduce((a,p)=>a+bits(p.mask),0)+" boxes filled • "+d.photos+" selfies";
 fetchMissing(ps)}
 async function loadBoard(){try{renderBoard(await adminCall("board"))}catch(e){}}
@@ -206,6 +228,36 @@ const f=new File([cardBlob],"my-human-bingo-card.jpg",{type:"image/jpeg"});$("cs
 $("cdl").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(cardBlob);a.download="my-human-bingo-card.jpg";a.click()};
 $("cshare").onclick=async()=>{try{await navigator.share({files:[new File([cardBlob],"my-human-bingo-card.jpg",{type:"image/jpeg"})],title:"My Human Bingo card"})}catch(e){}};
 $("cx").onclick=()=>$("cdlg").close();
+let sc={open:false,rank:1},scList=null,scShown="",scTok=0;const scPhotos=new Map(),shCells=[];
+const ORD=["1ST","2ND","3RD","4TH","5TH"],MEDAL=["🥇","🥈","🥉","🏅","🏅"];
+function fcardUpdate(p){const n=Object.keys(done).length,el=$("fcard");
+if(p==="FINISHED"){el.classList.remove("hide");$("fctext").textContent="⏱ Time's up! You filled "+n+" of 24 boxes."+(sc.open?"":" Waiting for the host to reveal the winners…")}
+else if(n===24){el.classList.remove("hide");$("fctext").textContent="🎉 You completed your card! Shout “BINGO!” and show it to the host. Waiting for the timer to end…"}
+else el.classList.add("hide")}
+(function(){const g=$("shgrid");for(let i=0;i<25;i++){const d=document.createElement("button");d.type="button";d.className="sc";let im=null;
+if(i===12){d.className="sc free";d.textContent="🦊"}else{im=document.createElement("img");im.alt="";const nn=document.createElement("span");nn.className="n";nn.textContent=num(i);d.append(im,nn);d.onclick=()=>zoomCell(i)}
+g.appendChild(d);shCells.push({d,im})}})();
+function zoomCell(i){const c=shCells[i];const src=c.im&&c.im.getAttribute("src");if(!src)return;$("zimg").src=src;$("zcap").textContent="BINGO"[i%5]+"-"+num(i)+": "+cells()[i];$("zoom").showModal()}
+function fillCells(w,photos){for(let i=0;i<25;i++){if(i===12)continue;const c=shCells[i],on=w&&((w.mask>>i)&1),src=photos&&photos[i];
+if(src){if(c.im.getAttribute("src")!==src)c.im.src=src;c.d.className="sc has"}else{c.im.removeAttribute("src");c.d.className="sc"+(on?" d":"")}}}
+function paintShow(w,rank){$("shrank").textContent=(MEDAL[rank-1]||"")+" "+ORD[rank-1]+" PLACE";
+if(!w){$("shname").textContent="—";$("shcount").textContent="No player at this place";fillCells(null,null);return}
+$("shname").textContent=w.name;$("shcount").textContent=w.count+" of 24 boxes"+(w.count===24?" • full card":"");fillCells(w,scPhotos.get(w.id)||null)}
+async function loadShow(){const my=++scTok,rank=sc.rank;
+try{if(!scList||!scList.length){const r=await api("/api/showcase");scList=r.winners||[];if(!r.open||!scList.length){scList=null;scShown="";if(my===scTok)paintShow(null,rank);return}}
+if(my!==scTok)return;const w=scList[rank-1];paintShow(w,rank);if(!w)return;
+if(!scPhotos.has(w.id)){const r=await api("/api/showphotos?id="+w.id);scPhotos.set(w.id,Object.fromEntries(r.items.map(x=>[x.i,x.src])));if(my!==scTok)return;paintShow(w,rank)}}
+catch(e){scShown=""}}
+function chipsPaint(){const c=$("shchips");if(c.children.length!==5){c.textContent="";for(let i=0;i<5;i++){const b=document.createElement("button");b.textContent=i+1;b.onclick=()=>setShow(i+1);c.appendChild(b)}}
+c.classList.toggle("ro",!isAdmin);[...c.children].forEach((b,i)=>{b.className=i+1===sc.rank?"on":"";b.disabled=!!(scList&&scList.length&&i>=scList.length)})}
+function showcaseSync(){const want=sc.open&&phase()==="FINISHED",el=$("show");
+if(!want){el.classList.add("hide");scShown="";return}
+el.classList.remove("hide");$("shctl").className=isAdmin?"":"hide";$("shnote").textContent=isAdmin?"You control which card everyone sees.":"The host chooses which card is shown.";chipsPaint();
+if(scShown!==String(sc.rank)){scShown=String(sc.rank);loadShow()}}
+async function setShow(rank,open){if(!isAdmin)return;if(open===undefined)open=true;rank=Math.max(1,Math.min(5,rank));if(open&&scList&&scList.length&&rank>scList.length)rank=scList.length;
+try{await adminCall("showcase",{open,rank});sc={open,rank};showcaseSync()}catch(e){$("amsg").textContent="Showcase failed — the round must be finished."}}
+$("shprev").onclick=()=>setShow(sc.rank-1);$("shnext").onclick=()=>setShow(sc.rank+1);$("shhide").onclick=()=>setShow(sc.rank,false);
+$("startshow").onclick=()=>setShow(1);$("lshow").onclick=()=>setShow(1);$("zx").onclick=()=>$("zoom").close();
 stage();setInterval(tick,250);render();
 function open(i){if(i===12)return;cur=i;blob=null;if(!engaged){engaged=true;report()}$("dp").textContent="BINGO"[i%5]+"-"+num(i)+": "+cells()[i];$("err").textContent="";
 if(done[i]){$("di").textContent="✓ Completed";$("pv").src=pics[i]||"";$("cam").className="hide";$("take").className="hide";$("pvw").className="";$("ok").className="hide";$("retake").className="hide";$("dlg").showModal();return}
@@ -255,13 +307,14 @@ function size(){const d=Math.min(window.devicePixelRatio||1,1.5);W=innerWidth;H=
 function frame(){g.clearRect(0,0,W,H);ribbons(g,W,H,t)}
 function loop(ts){requestAnimationFrame(loop);if(document.hidden||ts-last<42)return;last=ts;t+=.042;frame()}
 addEventListener("resize",size);size();if(!matchMedia("(prefers-reduced-motion: reduce)").matches)requestAnimationFrame(loop)})();
-function wipeLocal(){done={};pics={};ls.set("hb-done",done);ls.set("hb-pics",pics);ls.set("hb-up",{});reported=null;engaged=!!myName;render()}
+function wipeLocal(all){done={};pics={};ls.set("hb-done",done);ls.set("hb-pics",pics);ls.set("hb-up",{});reported=null;
+if(all){myName="";ls.set("hb-name","");ls.set("hb-consent","no");engaged=false;$("rname").value="";$("rok").checked=false;regOk();scPhotos.clear();scList=null;scShown="";for(const dd of document.querySelectorAll("dialog[open]"))dd.close();stage()}else engaged=!!myName;render()}
 async function sync(){try{const t0=Date.now(),d=await api("/api/time"),t1=Date.now();off=d.now-(t0+t1)/2}catch(e){}}
-async function poll(){try{const d=await api(isAdmin?"/api/state?a="+Date.now():"/api/state");state=d.status==="running"?{status:"running",startedAt:d.startedAt}:{status:"waiting"};photosTotal=d.photos||0;DUR=d.duration||600000;
-if((d.resetAt||0)!==(ls.get("hb-epoch")||0)){ls.set("hb-epoch",d.resetAt||0);wipeLocal()}
+async function poll(){try{const d=await api(isAdmin?"/api/state?a="+Date.now():"/api/state");state=d.status==="running"?{status:"running",startedAt:d.startedAt}:{status:"waiting"};photosTotal=d.photos||0;DUR=d.duration||600000;sc=d.showcase||{open:false,rank:1};
+if((d.resetAt||0)!==(ls.get("hb-epoch")||0)){ls.set("hb-epoch",d.resetAt||0);wipeLocal(true)}
 if(state.status==="running"&&ls.get("hb-round")!==state.startedAt){ls.set("hb-round",state.startedAt);wipeLocal()}
 if(!isAdmin&&Array.isArray(d.prompts)&&d.prompts.length===24&&JSON.stringify(d.prompts)!==JSON.stringify(prompts)){prompts=d.prompts;render()}
-tick();report();if(ls.get("hb-consent")==="yes"&&Object.keys(done).length)upload()}catch(e){$("timer").textContent="Reconnecting…"}}
+tick();showcaseSync();report();if(ls.get("hb-consent")==="yes"&&Object.keys(done).length)upload()}catch(e){$("timer").textContent="Reconnecting…"}}
 $("go").onclick=async()=>{if(!confirm(photosTotal?"Start a NEW round? This deletes the "+photosTotal+" photos from the last round — download them first.":"Start the "+($("mins").value||10)+"-minute timer for everyone?"))return;try{await adminCall("start",{minutes:Math.round(+$("mins").value)||10});$("amsg").textContent="";poll()}catch(e){$("amsg").textContent="Could not start (already running or wrong password)."}};
 $("reset").onclick=async()=>{if(!confirm("Reset the game for everyone?\n\nThis clears every player's card, the live board and all collected photos. Download the photos first!"))return;try{await adminCall("reset");poll()}catch(e){$("amsg").textContent="Reset failed."}};
 $("save").onclick=async()=>{try{await adminCall("prompts",{prompts});$("amsg").textContent="Saved ✓"}catch(e){$("amsg").textContent="Save failed."}};

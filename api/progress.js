@@ -1,10 +1,10 @@
-// Participants report WHICH squares they filled (a number, no photos, no names).
+// Participants report WHICH boxes they filled (a number) plus their name.
 const { cmd, pipe, getJSON } = require("./_redis");
+const { bits } = require("./_rank");
 
 const DURATION = 10 * 60 * 1000;
 const GRACE = 60 * 1000;
 const MAX_PLAYERS = 600;
-const FULL = ((1 << 25) - 1) & ~(1 << 12); // all 24 boxes (centre is FREE)
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -22,11 +22,14 @@ module.exports = async (req, res) => {
     if (state.status !== "running" || now < state.startedAt || now > state.startedAt + (state.duration || DURATION) + GRACE)
       return res.status(403).json({ error: "round closed" });
 
-    const [exists, count] = await pipe([["HEXISTS", "hb:prog", pid], ["HLEN", "hb:prog"]]);
-    if (!exists && count >= MAX_PLAYERS) return res.status(429).json({ error: "full" });
-    await cmd(["HSET", "hb:prog", pid, JSON.stringify({ m: mask, n: name })]);
-    if (mask === FULL && (await cmd(["SADD", "hb:full", pid])) === 1)
-      await cmd(["RPUSH", "hb:winners", JSON.stringify({ pid, t: Date.now() })]); // order = who finished first
+    const [prev, count] = await pipe([["HGET", "hb:prog", pid], ["HLEN", "hb:prog"]]);
+    if (prev == null && count >= MAX_PLAYERS) return res.status(429).json({ error: "full" });
+    // t = when they reached their current number of boxes (used to break ties: earlier wins)
+    let t = now;
+    if (prev) {
+      try { const o = JSON.parse(prev); if (bits(o.m) >= bits(mask) && o.t) t = o.t; } catch (e) {}
+    }
+    await cmd(["HSET", "hb:prog", pid, JSON.stringify({ m: mask, n: name, t })]);
     return res.status(200).json({ ok: true });
   } catch (e) {
     return res.status(500).json({ error: "server" });
