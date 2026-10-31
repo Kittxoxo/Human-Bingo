@@ -77,6 +77,21 @@ video,img.pv{width:100%;border-radius:16px;background:#000}.row{display:flex;gap
 .sc.d{background:#f26a1f}.sc.free{background:linear-gradient(160deg,#ffb347,#f26a1f)}
 .chips{display:flex;gap:8px;margin:6px 0 12px}.chips button{padding:9px 17px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.8);box-shadow:none}.chips button.on{background:#fff;color:var(--red)}.chips.ro button{pointer-events:none}.chips button:disabled{opacity:.35}
 #shctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:6px}#shctl.hide{display:none}
+.bgc{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+button svg{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.5em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sub::before,.sub::after{content:"";display:inline-block;width:30px;height:2px;background:currentColor;vertical-align:middle;margin:0 12px;opacity:.75}
+.card{box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 14px 36px rgba(60,5,0,.32)}
+#timer{overflow:hidden}#timer::before{content:"";position:absolute;left:0;bottom:0;height:4px;width:var(--p,0%);background:linear-gradient(90deg,#ffb347,#fff);transition:width .35s linear}
+.bar{position:relative}.bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(100% - 2px),rgba(60,5,0,.6) 0) 0 0/calc(100% / 24) 100%;pointer-events:none}
+.sq.in{animation:cellin .45s both}@keyframes cellin{from{opacity:0;transform:translateY(10px) scale(.94)}}
+.sq.pop{animation:popin .6s cubic-bezier(.2,1.4,.4,1)}@keyframes popin{from{transform:scale(.55);opacity:.2}}
+.sq.free em{top:auto;left:auto;right:4px;bottom:3px;width:20px;height:20px;border-radius:50%;background:var(--fox) center/cover;opacity:1}
+.mini i.f{background:var(--fox) center/72% no-repeat,linear-gradient(160deg,#ffb347,#f26a1f)}
+.sc.free{background:var(--fox) center/58% no-repeat,linear-gradient(160deg,#ffb347,#f26a1f)}
+.hdr b{box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.14)}
+.medal{display:inline-flex;align-items:center;justify-content:center;width:1.05em;height:1.05em;border-radius:50%;font-size:.78em;margin-right:.32em;color:#2b0a03;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.3);vertical-align:.06em}
+.m1{background:linear-gradient(160deg,#fff3b0,#f5b800)}.m2{background:linear-gradient(160deg,#fff,#b8c1cc)}.m3{background:linear-gradient(160deg,#ffd9b0,#c87533)}.m4,.m5{background:linear-gradient(160deg,#ffe2c4,#e8541a)}
+.pc{position:relative;overflow:hidden}.pc.full::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#ffb347,#c4300f)}
 .hide,.fin.hide,.live.hide,.show.hide{display:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -93,48 +108,48 @@ video,img.pv{width:100%;border-radius:16px;background:#000}.row{display:flex;gap
 <div class="card"><div id="whoami"></div><div id="prog">0 of 24 completed</div><div class="bar"><i id="fill"></i></div><div class="hint" id="msg" style="margin-top:8px">Tap a box, find the matching person, ask permission, and take a selfie together.</div></div>
 <div id="fcard" class="card hide"><div class="lbl">Final card</div><div id="fctext" style="font-weight:800;line-height:1.4"></div></div>
 <div class="sheet"><div class="hdr" aria-hidden="true"><b>B</b><b>I</b><b>N</b><b>G</b><b>O</b></div><div id="grid" class="grid" role="grid" aria-label="Bingo card"></div></div>
-<div class="row" style="justify-content:center"><button id="savecard">💾 Save my card</button></div></section>
-<section id="admin" class="card hide"><h2>🔐 Host Dashboard</h2><div class="row" style="margin:0 0 8px"><button id="toLive">📺 Open live board</button></div><div id="astat"></div>
+<div class="row" style="justify-content:center"><button id="savecard"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>Save my card</button></div></section>
+<section id="admin" class="card hide"><h2>Host Dashboard</h2><div class="row" style="margin:0 0 8px"><button id="toLive"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Open live board</button></div><div id="astat"></div>
 <div class="row" style="align-items:center"><label for="mins" style="font-weight:800">Minutes</label><input id="mins" type="number" min="1" max="120" value="10" style="width:84px;margin:0"><button id="go" class="red">START TIMER</button><button id="reset" class="alt">Reset</button></div>
-<div class="row"><b style="width:100%">Add or remove time</b><button class="alt adj" data-ms="-300000">−5 min</button><button class="alt adj" data-ms="-60000">−1 min</button><button class="alt adj" data-ms="-30000">−30 s</button><button class="alt adj" data-ms="30000">+30 s</button><button class="alt adj" data-ms="60000">+1 min</button><button class="alt adj" data-ms="300000">+5 min</button><button id="endnow" class="red">End now</button></div><div class="row"><button id="startshow" class="red">🏆 Start winners showcase</button></div><div class="row"><button id="zip" class="alt">⬇ Download all photos</button><button id="clr" class="alt">Delete all photos</button></div>
+<div class="row"><b style="width:100%">Add or remove time</b><button class="alt adj" data-ms="-300000">−5 min</button><button class="alt adj" data-ms="-60000">−1 min</button><button class="alt adj" data-ms="-30000">−30 s</button><button class="alt adj" data-ms="30000">+30 s</button><button class="alt adj" data-ms="60000">+1 min</button><button class="alt adj" data-ms="300000">+5 min</button><button id="endnow" class="red">End now</button></div><div class="row"><button id="startshow" class="red"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3"/><path d="M12 13v4M8 20h8M10 17h4"/></svg>Start winners showcase</button></div><div class="row"><button id="zip" class="alt"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>Download all photos</button><button id="clr" class="alt">Delete all photos</button></div>
 <h3>Prompts (center stays FREE)</h3><div id="plist"></div><div class="row"><button id="save">Save prompts</button><button id="prev" class="alt">Preview card</button></div><small id="amsg"></small></section>
 <p id="adminLink" class="hide" style="text-align:center"><button class="alt" id="toAdmin">Host login</button></p>
 </main>
-<div id="live" class="live hide" role="dialog" aria-label="Live board"><div class="lhead"><div class="livetitle">Human Bingo<br>Live board</div><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lshow" class="alt">🏆 Winners showcase</button><button id="lclose" class="alt">Close live board</button></div><div id="lwin"></div><div id="lempty" class="hide">Waiting for players to join…</div><div id="lgrid"></div></div>
-<div id="show" class="show hide" role="dialog" aria-label="Winners showcase"><div class="shin">
-<div class="sub" style="margin:0">🏆 Winners showcase</div><div id="shrank">&nbsp;</div><div id="shname"></div><div id="shcount"></div>
+<div id="live" class="live hide" role="dialog" aria-label="Live board"><canvas class="bgc" aria-hidden="true"></canvas><div class="lhead"><div class="livetitle">Human Bingo<br>Live board</div><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lshow" class="alt"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3"/><path d="M12 13v4M8 20h8M10 17h4"/></svg>Winners showcase</button><button id="lclose" class="alt">Close live board</button></div><div id="lwin"></div><div id="lempty" class="hide">Waiting for players to join…</div><div id="lgrid"></div></div>
+<div id="show" class="show hide" role="dialog" aria-label="Winners showcase"><canvas class="bgc" aria-hidden="true"></canvas><div class="shin">
+<div class="sub" style="margin:0">Winners showcase</div><div id="shrank">&nbsp;</div><div id="shname"></div><div id="shcount"></div>
 <div class="sheet shsheet"><div id="shgrid"></div></div>
 <div id="shchips" class="chips"></div>
-<div id="shctl" class="hide"><button id="shprev" class="alt">◀ Prev</button><button id="shnext">Next ▶</button><button id="shhide" class="alt">Hide showcase</button></div>
+<div id="shctl" class="hide"><button id="shprev" class="alt">← Prev</button><button id="shnext">Next →</button><button id="shhide" class="alt">Hide showcase</button></div>
 <div class="hint" id="shnote" style="text-align:center"></div></div></div>
 <dialog id="zoom" aria-label="Photo"><img id="zimg" alt="" style="width:100%;border-radius:14px"><div id="zcap" style="font-weight:800;text-align:center;margin:8px 0"></div><div class="row" style="justify-content:center"><button id="zx" class="alt">Close</button></div></dialog>
 <dialog id="lbig" aria-label="Player card"><div id="lbigbody"></div><div class="row"><button id="lbx" class="alt">Close</button></div></dialog>
 <dialog id="dlg" aria-label="Prompt"><h3 id="dp"></h3><p id="di">Find someone who matches this, ask their permission, then take a selfie together.</p>
-<div id="cam" class="hide"><video id="vid" playsinline muted></video><div class="row"><button id="snap">📸 Capture</button><button id="flip" class="alt">Switch camera</button><button id="mir" class="alt">Mirror: ON</button></div></div>
+<div id="cam" class="hide"><video id="vid" playsinline muted></video><div class="row"><button id="snap"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Capture</button><button id="flip" class="alt">Switch camera</button><button id="mir" class="alt">Mirror: ON</button></div></div>
 <div id="pvw" class="hide"><img id="pv" class="pv" alt="Selfie preview"><div class="row"><button id="ok">✓ Confirm</button><button id="retake" class="alt">Retake</button><button id="dl" class="alt">Download Selfie</button></div></div>
 <p id="err" style="color:var(--acc)"></p><input id="file" type="file" accept="image/*" capture="user" class="hide">
 <div class="row"><button id="take">Take a Selfie</button><button id="x" class="alt">Close</button></div></dialog>
 <div id="live" class="live hide" role="dialog" aria-label="Live board"><div class="lhead"><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lclose" class="alt">Back to my card</button></div><div id="lgrid"></div></div>
 <div id="fin" class="fin hide" role="dialog" aria-label="Time is up"><h2>TIME'S UP!</h2><p id="finmsg" style="font-weight:800;margin:6px 0">Loading everyone's selfies…</p><div class="bar"><i id="finbar"></i></div><div id="mosaic" aria-label="All selfies"></div><button id="finskip" class="alt">Back to my card</button></div>
 <dialog id="cdlg" aria-label="My bingo card"><h3>My Bingo card</h3><img id="cimg" alt="My bingo card" style="width:100%;border:3px solid #111;border-radius:6px"><p><small>Tap Save to download it, or press and hold the picture and choose Save Image.</small></p><div class="row"><button id="cdl">Save to device</button><button id="cshare" class="alt hide">Share…</button><button id="cx" class="alt">Close</button></div></dialog>
-<dialog id="win"><h2 id="wh">🎉 BINGO! Sigaw na!</h2><p id="wt"></p><button id="wc">Keep playing</button></dialog>
+<dialog id="win"><h2 id="wh">BINGO! Sigaw na!</h2><p id="wt"></p><button id="wc">Keep playing</button></dialog>
 <script>
 const DEF=["Same birthday","Polyglot","Musician","Went abroad","Can dance","Same fave color","Baby of family","Quirky hobby","Met a star","Same music taste","Hidden talent","Same fave food","Joined a contest","Morning person","Has a pet","Movie tip","Birth month twin","Fun fact","Tried odd food","Same hobby","Wants a new skill","School club","Loves nature","Same dream job"];
-const ICONS=["🎂","🗣️","🎸","✈️","💃","🎨","👶","🧩","🌟","🎧","✨","🍜","🏆","🌅","🐶","🎬","📅","💡","🍣","🎯","📚","🏫","🏕️","💼"];
-const $=id=>document.getElementById(id);let DUR=600000;
-let prompts=DEF.slice(),state={status:"waiting"},done={},pics={},lines=0,cur=-1,stream,blob,facing="user",isAdmin=false,off=0,photosTotal=0,finDone=false,finBegun=false,FIN=0,mirror=true,engaged=false,reported=null,liveOpen=false,liveTimer=null,myName="",wantLive=false;
+
+const $=id=>document.getElementById(id);document.documentElement.style.setProperty("--fox","url("+document.querySelector(".logos img:nth-child(2)").src+")");let DUR=600000;
+let prompts=DEF.slice(),state={status:"waiting"},done={},pics={},lines=0,cur=-1,stream,blob,facing="user",isAdmin=false,off=0,photosTotal=0,finDone=false,finBegun=false,FIN=0,mirror=true,engaged=false,reported=null,liveOpen=false,liveTimer=null,myName="",wantLive=false,seenDone=new Set(),rendered=false;
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 done=ls.get("hb-done")||{};pics=ls.get("hb-pics")||{};myName=ls.get("hb-name")||"";engaged=!!myName;let pid=ls.get("hb-pid");if(!pid){pid=Array.from(crypto.getRandomValues(new Uint8Array(10))).map(b=>(b%36).toString(36)).join("");ls.set("hb-pid",pid)}
-const cells=()=>prompts.slice(0,12).concat(["FREE SPACE"],prompts.slice(12,24));const num=i=>{const r=Math.floor(i/5),c=i%5;return c*15+1+((r*7+c*3)%15)};const icon=i=>i===12?"🦊":ICONS[i<12?i:i-1]||"⭐";
+const cells=()=>prompts.slice(0,12).concat(["FREE SPACE"],prompts.slice(12,24));const num=i=>{const r=Math.floor(i/5),c=i%5;return c*15+1+((r*7+c*3)%15)};
 const phase=()=>{if(state.status!=="running")return"WAITING";return Date.now()+off>=state.startedAt+DUR?"FINISHED":"RUNNING"};
 const WINS=[...[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>r*5+c)),...[0,1,2,3,4].map(c=>[0,1,2,3,4].map(r=>r*5+c)),[0,6,12,18,24],[4,8,12,16,20]];
 const isDone=i=>i===12||done[i];const winLines=()=>WINS.filter(l=>l.every(isDone));
-function render(){const g=$("grid");g.textContent="";cells().forEach((t,i)=>{const b=document.createElement("button");b.className="sq"+(i===12?" free":"")+(isDone(i)&&i!==12?" done":"");
-{const e=document.createElement("em");e.textContent=i===12?"🦊":num(i);const sp=document.createElement("span");sp.textContent=i===12?"FREE":t;b.append(e,sp);if(pics[i]&&done[i]){const im=document.createElement("img");im.src=pics[i];im.alt="Selfie for "+t;b.prepend(im);b.classList.add("pic")}}b.setAttribute("aria-label",t+(i===12?" (free)":isDone(i)?" — completed":" — not completed"));if(winLines().some(l=>l.includes(i)))b.classList.add("win");
-b.onclick=()=>open(i);g.appendChild(b)});const n=Object.keys(done).length;$("prog").textContent=n+" of 24 completed";$("fill").style.width=n/24*100+"%";
-$("msg").textContent=phase()==="FINISHED"?"Tap Save my card to keep a copy of your final card.":n===24?"🏆 Full card! Shout “BINGO!” and show your card to the host.":winLines().length?winLines().length+" bingo line(s)! Keep going — fill the whole card to win.":"Tap a box, find the matching person, ask permission, and take a selfie together."}
-function tick(){const t=$("timer"),p=phase();let s;if(p==="WAITING"){s="⏳ Waiting for the host to start";t.className=""}
-else if(p==="RUNNING"){const r=Math.max(0,state.startedAt+DUR-(Date.now()+off));const m=Math.floor(r/60000),sc=Math.floor(r/1000)%60;s="⏱ "+String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");t.className=r<60000?"run low":"run"}
+function render(){const g=$("grid");g.textContent="";cells().forEach((t,i)=>{const b=document.createElement("button");b.className="sq"+(i===12?" free":"")+(isDone(i)&&i!==12?" done":"");if(!rendered){b.classList.add("in");b.style.animationDelay=(i*16)+"ms"}else if(isDone(i)&&i!==12&&!seenDone.has(i))b.classList.add("pop");
+{const e=document.createElement("em");e.textContent=i===12?"":num(i);const sp=document.createElement("span");sp.textContent=i===12?"FREE":t;b.append(e,sp);if(pics[i]&&done[i]){const im=document.createElement("img");im.src=pics[i];im.alt="Selfie for "+t;b.prepend(im);b.classList.add("pic")}}b.setAttribute("aria-label",t+(i===12?" (free)":isDone(i)?" — completed":" — not completed"));if(winLines().some(l=>l.includes(i)))b.classList.add("win");
+b.onclick=()=>open(i);g.appendChild(b)});const n=Object.keys(done).length;seenDone=new Set(Object.keys(done).map(Number));rendered=true;$("prog").textContent=n+" of 24 completed";$("fill").style.width=n/24*100+"%";
+$("msg").textContent=phase()==="FINISHED"?"Tap Save my card to keep a copy of your final card.":n===24?"Full card! Shout “BINGO!” and show your card to the host.":winLines().length?winLines().length+" bingo line(s)! Keep going — fill the whole card to win.":"Tap a box, find the matching person, ask permission, and take a selfie together."}
+function tick(){const t=$("timer"),p=phase();let s;if(p==="WAITING"){s="Waiting for the host to start";t.className=""}
+else if(p==="RUNNING"){const r=Math.max(0,state.startedAt+DUR-(Date.now()+off));t.style.setProperty("--p",(r/DUR*100).toFixed(2)+"%");const m=Math.floor(r/60000),sc=Math.floor(r/1000)%60;s=""+String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");t.className=r<60000?"run low":"run"}
 else{s="TIME'S UP!";t.className="low"}t.textContent=s;
 if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Tap Save my card to keep a copy of your final card.";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
 if(isAdmin)$("astat").textContent="Status: "+p+(p==="RUNNING"?" — "+$("timer").textContent:"")+" • Total time: "+Math.round(DUR/6000)/10+" min • Photos collected: "+photosTotal;$("go").disabled=p!=="WAITING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
@@ -150,7 +165,7 @@ bs=Math.floor(Math.min(bs,180));box.style.gridTemplateColumns="repeat("+best+","
 while(box.children.length<n){const im=document.createElement("img");im.src=a[box.children.length];im.alt="";box.appendChild(im)}}
 async function loadMosaic(){$("mosaic").textContent="";const all=[];let cursor=0;$("finmsg").textContent="Loading everyone's selfies…";
 try{while(cursor!==null&&all.length<600){const d=await api("/api/photos?cursor="+cursor+"&limit=100");all.push(...d.items.map(x=>x.src));cursor=d.next;layout(all)}}catch(e){}
-$("finmsg").textContent=all.length?all.length+" selfies from tonight 📸":"No selfies were shared this round."}
+$("finmsg").textContent=all.length?all.length+" selfies from tonight":"No selfies were shared this round."}
 function stage(){const need=!myName;$("reg").className=need?"":"hide";$("play").className=need?"hide":"";$("whoami").textContent=myName?"Playing as "+myName:""}
 const regOk=()=>{$("rgo").disabled=!($("rname").value.trim().length>=2&&$("rok").checked)};$("rname").oninput=regOk;$("rok").onchange=regOk;
 $("rgo").onclick=()=>{const n=$("rname").value.trim().replace(/\s+/g," ").slice(0,24);if(n.length<2||!$("rok").checked)return;myName=n;ls.set("hb-name",n);ls.set("hb-consent","yes");engaged=true;stage();render();report()};
@@ -165,10 +180,10 @@ try{await api("/api/progress",{method:"POST",headers:{"Content-Type":"applicatio
 const thumbs=new Map(),inflight=new Set(),missAt=new Map(),cardEls=new Map();let lastPlayers=[],lastRk=new Map(),fetching=false;
 const fmtT=ms=>{const t=Math.max(0,Math.floor(ms/1000));return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0")};
 function mkCard(){const c=document.createElement("div");c.className="pc";const nm=document.createElement("b"),mi=document.createElement("div"),sm=document.createElement("small"),cells=[];mi.className="mini";
-for(let i=0;i<25;i++){const x=document.createElement("i");if(i===12){x.className="f";x.textContent="🦊"}mi.appendChild(x);cells.push(x)}
+for(let i=0;i<25;i++){const x=document.createElement("i");if(i===12){x.className="f"}mi.appendChild(x);cells.push(x)}
 c.append(nm,mi,sm);return{el:c,nm,sm,cells,mask:0,seen:false}}
 function paintCard(k,p,rank){const lines=linesOf(p.mask),win=new Set(lines.flat());
-k.nm.textContent=(rank&&rank<=5?["🥇","🥈","🥉","🏅","🏅"][rank-1]+" ":"")+p.name;
+k.nm.textContent=(rank&&rank<=5?"#"+rank+" ":"")+p.name;
 for(let i=0;i<25;i++){if(i===12)continue;const x=k.cells[i],on=(p.mask>>i)&1,key=p.pid+":"+i,t=thumbs.get(key);
 if(on&&t){if(x.dataset.k!==key){x.style.backgroundImage="url("+t+")";x.dataset.k=key}x.className="p"}
 else if(on){x.style.backgroundImage="";delete x.dataset.k;x.className="d"}
@@ -189,7 +204,7 @@ const ids=new Set(ps.map(p=>p.pid));for(const[pid,k]of[...cardEls])if(!ids.has(p
 ps.forEach((p,idx)=>{let k=cardEls.get(p.pid);if(!k){k=mkCard();k.el.onclick=()=>bigCard(p.pid);cardEls.set(p.pid,k);g.appendChild(k.el)}k.el.style.order=idx;const r=rk.get(p.pid)||0;k.el.classList.toggle("full",r>0);paintCard(k,p,r)});
 $("lempty").className=ps.length?"hide":"";
 const top=ps.filter(p=>rk.has(p.pid)).map((p,i)=>(i+1)+". "+p.name+" ("+(fin?bits(p.mask)+"/24":fmtT((p.t||0)-d.startedAt))+")");
-$("lwin").textContent=top.length?(fin?"🏆 FINAL TOP 5:  ":"🏆 FIRST TO COMPLETE:  ")+top.join("   •   "):"🏆 Waiting for the first full card…";
+$("lwin").textContent=top.length?(fin?"FINAL TOP 5:  ":"FIRST TO COMPLETE:  ")+top.join("   •   "):"Waiting for the first full card…";
 $("lstat").textContent=ps.length+" players • "+ps.reduce((a,p)=>a+bits(p.mask),0)+" boxes filled • "+d.photos+" selfies";
 fetchMissing(ps)}
 async function loadBoard(){try{renderBoard(await adminCall("board"))}catch(e){}}
@@ -203,15 +218,15 @@ async function drawCard(){try{await document.fonts.ready}catch(e){}
 const W=1080,PAD=60,HEAD=340,BING=120,G=W-PAD*2,C=G/5,H=HEAD+BING+G+250,HD='"Archivo Black",Impact,"Arial Black",sans-serif',SANS='Archivo,"Segoe UI",Arial,sans-serif';
 const cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
 const g1=x.createLinearGradient(0,0,W*.4,H);g1.addColorStop(0,"#c92a0e");g1.addColorStop(.55,"#e5521a");g1.addColorStop(1,"#f58a2a");x.fillStyle=g1;x.fillRect(0,0,W,H);
-const g2=x.createRadialGradient(W/2,H+60,20,W/2,H+60,W*.85);g2.addColorStop(0,"rgba(255,215,122,.95)");g2.addColorStop(1,"rgba(255,215,122,0)");x.fillStyle=g2;x.fillRect(0,0,W,H);ribbons(x,W,H,2.4);
+const g2=x.createRadialGradient(W/2,H+60,20,W/2,H+60,W*.85);g2.addColorStop(0,"rgba(255,215,122,.95)");g2.addColorStop(1,"rgba(255,215,122,0)");x.fillStyle=g2;x.fillRect(0,0,W,H);bgScene(x,W,H,2.4,1);ribbons(x,W,H,2.4,1);
 x.textAlign="center";x.fillStyle="#fff";x.font="108px "+HD;x.shadowColor="rgba(60,5,0,.45)";x.shadowBlur=24;x.shadowOffsetY=8;x.fillText("HUMAN BINGO",W/2,170);x.shadowColor="transparent";
 x.font="800 30px "+SANS;x.fillText("S C H O O L   O F   C O M P U T I N G",W/2,226);x.font="50px "+HD;x.fillText((myName||"PLAYER").toUpperCase(),W/2,302);
 rr(x,PAD-20,HEAD-10,G+40,BING+G+36,26,"#fff");x.strokeStyle="#000";x.lineWidth=10;x.lineCap="square";
 const sx=PAD-30,sy=HEAD-20,sw=G+60,sh=BING+G+56;[[sx,sy,1,1],[sx+sw,sy,-1,1],[sx,sy+sh,1,-1],[sx+sw,sy+sh,-1,-1]].forEach(([a,b,dx,dy])=>{x.beginPath();x.moveTo(a+dx*70,b);x.lineTo(a,b);x.lineTo(a,b+dy*70);x.stroke()});
 const hc=["#f77f2a","#f26a1f","#e8541a","#d93f12","#c92a0e"];"BINGO".split("").forEach((L,i)=>{rr(x,PAD+i*C+3,HEAD+4,C-6,BING-8,14,hc[i]);x.fillStyle="#fff";x.font="76px "+HD;x.fillText(L,PAD+i*C+C/2,HEAD+BING-30)});
-let n=0;const gy=HEAD+BING+8;
+let n=0;const gy=HEAD+BING+8;const foxImg=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=document.querySelector(".logos img:nth-child(2)").src});
 for(let i=0;i<25;i++){const cx=PAD+(i%5)*C+3,cy=gy+Math.floor(i/5)*C+3,s2=C-6;rr(x,cx,cy,s2,s2,14,"#fff");
-if(i===12){rr(x,cx,cy,s2,s2,14,"#ffb347","#1a0a05");x.strokeStyle="#1a0a05";x.lineWidth=6;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.34,0,7);x.stroke();x.fillStyle="#1a0a05";x.font="32px "+HD;x.fillText("FREE",cx+s2/2,cy+s2/2+11);x.font="42px serif";x.fillText("🦊",cx+s2*.8,cy+s2*.9);continue}
+if(i===12){rr(x,cx,cy,s2,s2,14,"#ffb347","#1a0a05");x.strokeStyle="#1a0a05";x.lineWidth=6;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.34,0,7);x.stroke();x.fillStyle="#1a0a05";x.font="32px "+HD;x.fillText("FREE",cx+s2/2,cy+s2/2+11);if(foxImg)x.drawImage(foxImg,cx+s2*.62,cy+s2*.64,s2*.3,s2*.3);continue}
 const t=cells()[i],isD=!!done[i];if(isD)n++;
 let im=null;if(isD&&pics[i])im=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=pics[i]});
 if(im){x.save();rr(x,cx,cy,s2,s2,14);x.clip();x.drawImage(im,cx,cy,s2,s2);x.fillStyle="rgba(26,10,5,.78)";x.fillRect(cx,cy+s2-62,s2,62);x.restore();x.fillStyle="#fff";x.font="800 24px "+SANS;const l2=wrapText(x,t,s2-16).slice(0,2);l2.forEach((q,k)=>x.fillText(q,cx+s2/2,cy+s2-36+k*26+(l2.length===1?12:0)))}
@@ -229,18 +244,18 @@ $("cdl").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjec
 $("cshare").onclick=async()=>{try{await navigator.share({files:[new File([cardBlob],"my-human-bingo-card.jpg",{type:"image/jpeg"})],title:"My Human Bingo card"})}catch(e){}};
 $("cx").onclick=()=>$("cdlg").close();
 let sc={open:false,rank:1},scList=null,scShown="",scTok=0;const scPhotos=new Map(),shCells=[];
-const ORD=["1ST","2ND","3RD","4TH","5TH"],MEDAL=["🥇","🥈","🥉","🏅","🏅"];
+const ORD=["1ST","2ND","3RD","4TH","5TH"];
 function fcardUpdate(p){const n=Object.keys(done).length,el=$("fcard");
-if(p==="FINISHED"){el.classList.remove("hide");$("fctext").textContent="⏱ Time's up! You filled "+n+" of 24 boxes."+(sc.open?"":" Waiting for the host to reveal the winners…")}
-else if(n===24){el.classList.remove("hide");$("fctext").textContent="🎉 You completed your card! Shout “BINGO!” and show it to the host. Waiting for the timer to end…"}
+if(p==="FINISHED"){el.classList.remove("hide");$("fctext").textContent="Time's up! You filled "+n+" of 24 boxes."+(sc.open?"":" Waiting for the host to reveal the winners…")}
+else if(n===24){el.classList.remove("hide");$("fctext").textContent="You completed your card! Shout “BINGO!” and show it to the host. Waiting for the timer to end…"}
 else el.classList.add("hide")}
 (function(){const g=$("shgrid");for(let i=0;i<25;i++){const d=document.createElement("button");d.type="button";d.className="sc";let im=null;
-if(i===12){d.className="sc free";d.textContent="🦊"}else{im=document.createElement("img");im.alt="";const nn=document.createElement("span");nn.className="n";nn.textContent=num(i);d.append(im,nn);d.onclick=()=>zoomCell(i)}
+if(i===12){d.className="sc free"}else{im=document.createElement("img");im.alt="";const nn=document.createElement("span");nn.className="n";nn.textContent=num(i);d.append(im,nn);d.onclick=()=>zoomCell(i)}
 g.appendChild(d);shCells.push({d,im})}})();
 function zoomCell(i){const c=shCells[i];const src=c.im&&c.im.getAttribute("src");if(!src)return;$("zimg").src=src;$("zcap").textContent="BINGO"[i%5]+"-"+num(i)+": "+cells()[i];$("zoom").showModal()}
 function fillCells(w,photos){for(let i=0;i<25;i++){if(i===12)continue;const c=shCells[i],on=w&&((w.mask>>i)&1),src=photos&&photos[i];
 if(src){if(c.im.getAttribute("src")!==src)c.im.src=src;c.d.className="sc has"}else{c.im.removeAttribute("src");c.d.className="sc"+(on?" d":"")}}}
-function paintShow(w,rank){$("shrank").textContent=(MEDAL[rank-1]||"")+" "+ORD[rank-1]+" PLACE";
+function paintShow(w,rank){$("shrank").innerHTML='<span class="medal m'+rank+'"></span>'+ORD[rank-1]+" PLACE";
 if(!w){$("shname").textContent="—";$("shcount").textContent="No player at this place";fillCells(null,null);return}
 $("shname").textContent=w.name;$("shcount").textContent=w.count+" of 24 boxes"+(w.count===24?" • full card":"");fillCells(w,scPhotos.get(w.id)||null)}
 async function loadShow(){const my=++scTok,rank=sc.rank;
@@ -286,8 +301,8 @@ try{for(const k of Object.keys(done)){if(up[k]||!pics[k])continue;
 try{const th=await squareJpeg(await dataToBlob(pics[k]),120,.6);await api("/api/photo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pid,i:+k,thumb:th,full:pics[k]})});up[k]=1;ls.set("hb-up",up)}
 catch(e){if(/^4/.test(e.message)){up[k]=1;ls.set("hb-up",up)}}}}finally{upBusy=false}}
 $("x").onclick=()=>{stopCam();$("dlg").close()};$("dlg").onclose=stopCam;
-function cheer(){const full=Object.keys(done).length===24;$("wh").textContent=full?"🎉 BINGO! Sigaw na!":"🎉 Line complete!";$("wt").textContent=full?"FULL CARD! Shout “BINGO!” and show your card to the host for verification.":"Keep going — fill the whole card to win a prize.";$("win").showModal();const c=document.createElement("div");c.className="conf";
-for(let i=0;i<30;i++){const b=document.createElement("b");b.textContent=["🎉","⭐","🎊","✨"][i%4];b.style.left=Math.random()*100+"%";b.style.animationDelay=Math.random()+"s";c.appendChild(b)}document.body.appendChild(c);setTimeout(()=>c.remove(),4000)}
+function cheer(){const full=Object.keys(done).length===24;$("wh").textContent=full?"BINGO! Sigaw na!":"Line complete!";$("wt").textContent=full?"FULL CARD! Shout “BINGO!” and show your card to the host for verification.":"Keep going — fill the whole card to win a prize.";$("win").showModal();const c=document.createElement("div");c.className="conf";
+for(let i=0;i<30;i++){const b=document.createElement("b");b.style.left=Math.random()*100+"%";b.style.background=["#ffb347","#fff","#c4300f","#ffd77a","#f26a1f"][i%5];b.style.width=(6+Math.random()*8)+"px";b.style.height=(10+Math.random()*12)+"px";b.style.borderRadius="2px";b.style.animationDelay=Math.random()+"s";c.appendChild(b)}document.body.appendChild(c);setTimeout(()=>c.remove(),4000)}
 $("wc").onclick=()=>$("win").close();
 $("start").onclick=()=>{$("land").className="hide";$("play").className="";render()};
 function plist(){const p=$("plist");p.textContent="";prompts.forEach((t,i)=>{const e=document.createElement("input");e.value=t;e.setAttribute("aria-label","Prompt "+(i+1));e.oninput=()=>prompts[i]=e.value;p.appendChild(e)})}
@@ -295,18 +310,47 @@ $("prev").onclick=()=>{$("land").className="hide";$("play").className="";render(
 let pw=sessionStorage.getItem("hb-pw")||"";
 async function api(path,opt){const r=await fetch(path,opt);if(!r.ok)throw new Error(r.status);return r.json()}
 const adminCall=(action,extra)=>api("/api/admin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw,action,...(extra||{})})});
-function ribbons(g,W,H,t){g.lineCap="round";g.lineJoin="round";const sc=Math.min(W,H*.7)/420,M=110;
+function hsh(i,k){const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x)}
+function ribbons(g,W,H,t,q){q=q||1;g.lineCap="round";g.lineJoin="round";const sc=Math.min(W,H*.7)/420,M=110;
 const groups=[{cx:.68,cy:.3,R:.55,a0:-.5,a1:1.45,n:72,gap:3.6},{cx:.12,cy:.88,R:.34,a0:-1.3,a1:.75,n:50,gap:3.2}];
-for(const G of groups){const cx=G.cx*W,cy=G.cy*H,R=G.R*Math.min(W,H*1.1);
-for(let k=0;k<G.n;k++){const u=k/(G.n-1);g.strokeStyle="hsla("+(52-78*u)+","+(96-6*u)+"%,"+(68-26*u)+"%,.92)";g.lineWidth=(1.6+1.1*u)*Math.max(sc,.8);g.beginPath();
+for(const G of groups){const cx=G.cx*W,cy=G.cy*H,R=G.R*Math.min(W,H*1.1),N=Math.round(G.n*q),gap=G.gap/q;
+for(let k=0;k<N;k++){const u=k/(N-1);g.strokeStyle="hsla("+(52-78*u)+","+(96-6*u)+"%,"+(68-26*u)+"%,.92)";g.lineWidth=(1.6+1.1*u)*Math.max(sc,.8);g.beginPath();
 for(let j=0;j<=M;j++){const s=j/M,a=G.a0+(G.a1-G.a0)*s,w=Math.pow(Math.sin(Math.PI*s),.75);
-const r=R*(1-.5*s)+(k-G.n*.4)*G.gap*sc*w+10*sc*Math.sin(3*a+t*.35+k*.09)+4.2*sc*w*Math.sin(a*58+k*.85+t*.9);
+const r=R*(1-.5*s)+(k-N*.4)*gap*sc*w+10*sc*Math.sin(3*a+t*.35+k*.09)+4.2*sc*w*Math.sin(a*58+k*.85+t*.9);
 const x=cx+r*Math.cos(a)*1.06,y=cy+r*Math.sin(a);j?g.lineTo(x,y):g.moveTo(x,y)}g.stroke()}}}
-(function(){const cv=$("bg"),g=cv.getContext("2d");let W=0,H=0,t=0,last=0;
-function size(){const d=Math.min(window.devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);frame()}
-function frame(){g.clearRect(0,0,W,H);ribbons(g,W,H,t)}
-function loop(ts){requestAnimationFrame(loop);if(document.hidden||ts-last<42)return;last=ts;t+=.042;frame()}
-addEventListener("resize",size);size();if(!matchMedia("(prefers-reduced-motion: reduce)").matches)requestAnimationFrame(loop)})();
+function bgScene(g,W,H,t,q){q=q||1;const sc=Math.min(W,H*.7)/420,ms=Math.max(sc,.8);g.save();
+/* perspective floor grid */
+const gy=H*.66,vx=W*.5,fl=(t*.45)%1;g.lineWidth=1;g.strokeStyle="#fff";
+for(let k=0;k<14;k++){const u=(k+fl)/14,y=gy+Math.pow(u,2.1)*(H-gy);g.globalAlpha=.05+.22*u;g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}
+for(let k=-14;k<=14;k++){g.globalAlpha=.16;g.beginPath();g.moveTo(vx+k*W*.01,gy);g.lineTo(vx+k*W*.16,H);g.stroke()}
+/* orbit rings with satellites */
+g.strokeStyle="#fff";g.fillStyle="#fff";
+[[.15,.17,1],[.9,.8,.75]].forEach(([fx,fy,z],gi)=>{const cx=fx*W,cy=fy*H;for(let k=0;k<3;k++){const rx=(60+k*42)*sc*z*1.2,ry=rx*.42,rot=t*.07*(k%2?1:-1)+k+gi;
+g.globalAlpha=.3;g.lineWidth=1.2;g.setLineDash([5,9]);g.lineDashOffset=-t*16*(k%2?1:-1);g.beginPath();g.ellipse(cx,cy,rx,ry,rot,0,Math.PI*2);g.stroke();g.setLineDash([]);
+const a=t*(.5+k*.22)+k*2,px=rx*Math.cos(a),py=ry*Math.sin(a);g.globalAlpha=.9;g.beginPath();g.arc(cx+px*Math.cos(rot)-py*Math.sin(rot),cy+px*Math.sin(rot)+py*Math.cos(rot),(2.4+k*.4)*ms,0,7);g.fill()}
+g.globalAlpha=.7;g.beginPath();g.arc(cx,cy,3.2*ms,0,7);g.fill()});
+/* HUD crosses */
+g.lineWidth=1.4;g.globalAlpha=.32;for(let i=0;i<Math.round(16*q);i++){const x=hsh(i,21)*W,y=hsh(i,22)*H*.75,z=(4+hsh(i,23)*5)*ms;g.beginPath();g.moveTo(x-z,y);g.lineTo(x+z,y);g.moveTo(x,y-z);g.lineTo(x,y+z);g.stroke()}
+/* faint outlined code glyphs */
+g.lineWidth=2;g.strokeStyle="#fff";g.globalAlpha=.16;g.font=Math.round(112*sc)+'px "Archivo Black",Impact,sans-serif';g.textAlign="left";
+const bob=Math.sin(t*.3)*7;g.save();g.translate(W*.04,H*.5+bob);g.rotate(-.12);g.strokeText("</>",0,0);g.restore();g.save();g.translate(W*.62,H*.94-bob);g.rotate(.08);g.strokeText("{ }",0,0);g.restore();
+/* binary rain */
+g.font="600 "+Math.round(11*Math.max(ms,.9))+'px "Courier New",monospace';g.fillStyle="#fff";
+for(let i=0,nc=Math.round(9*q);i<nc;i++){const x=(i+.3+hsh(i,5)*.4)*W/nc,sp=24+hsh(i,6)*30,off=hsh(i,7)*H;
+for(let k=0;k<12;k++){const y=((t*sp+k*-15+off)%(H+200))-60;if(y<0||y>H)continue;g.globalAlpha=.07+.3*(1-k/12);g.fillText((Math.floor(t*1.6+i*7+k*3+hsh(i,k)*5)%2)?"1":"0",x,y)}}
+/* rising glow particles */
+for(let i=0,n=Math.round(48*q);i<n;i++){const x=hsh(i,1)*W+Math.sin(t*.25+i)*14,y=H-((hsh(i,2)*H+t*(8+hsh(i,3)*20))%H),r=(.8+hsh(i,4)*2.3)*ms,a=.25+.55*Math.pow(Math.sin(t*1.3+i*1.7),2);
+g.fillStyle=i%3?"#ffe9b8":"#fff";g.globalAlpha=a*.35;g.beginPath();g.arc(x,y,r*2.6,0,7);g.fill();g.globalAlpha=a;g.beginPath();g.arc(x,y,r,0,7);g.fill()}
+g.restore();g.globalAlpha=1}
+const scenes=[];let tBg=0,lastF=0,slow=0,Q=1;
+function sizeScene(o){const d=Math.min(devicePixelRatio||1,1.5),W=o.cv.clientWidth||innerWidth,H=o.cv.clientHeight||innerHeight;if(W!==o.W||H!==o.H||o.d!==d){o.W=W;o.H=H;o.d=d;o.cv.width=W*d;o.cv.height=H*d;o.g.setTransform(d,0,0,d,0,0)}}
+function drawScene(o){if(!o.cv.offsetWidth)return;sizeScene(o);o.g.clearRect(0,0,o.W,o.H);bgScene(o.g,o.W,o.H,tBg,Q);ribbons(o.g,o.W,o.H,tBg,Q)}
+const overlayOpen=()=>["live","show"].some(id=>!$(id).classList.contains("hide"));
+function bgLoop(ts){requestAnimationFrame(bgLoop);if(document.hidden||ts-lastF<42)return;lastF=ts;tBg+=.042;const t0=performance.now(),open=overlayOpen();
+for(const o of scenes){if(o.main&&open)continue;drawScene(o)}slow=slow*.9+(performance.now()-t0)*.1;if(slow>26&&Q>.5)Q=.5}
+document.querySelectorAll("canvas.bgc,#bg").forEach(cv=>scenes.push({cv,g:cv.getContext("2d"),W:0,H:0,d:0,main:cv.id==="bg"}));
+addEventListener("resize",()=>scenes.forEach(drawScene));scenes.forEach(drawScene);
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches)requestAnimationFrame(bgLoop);
 function wipeLocal(all){done={};pics={};ls.set("hb-done",done);ls.set("hb-pics",pics);ls.set("hb-up",{});reported=null;
 if(all){myName="";ls.set("hb-name","");ls.set("hb-consent","no");engaged=false;$("rname").value="";$("rok").checked=false;regOk();scPhotos.clear();scList=null;scShown="";for(const dd of document.querySelectorAll("dialog[open]"))dd.close();stage()}else engaged=!!myName;render()}
 async function sync(){try{const t0=Date.now(),d=await api("/api/time"),t1=Date.now();off=d.now-(t0+t1)/2}catch(e){}}
