@@ -135,36 +135,42 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -5px 9px rgba(0,0,0,.32),
 .sq.free{background:linear-gradient(160deg,#ffd77a,#f26a1f 70%)}
 .sq.free span{font-family:var(--hd);text-shadow:0 1px 3px rgba(0,0,0,.45)}
 .sq.win{background:linear-gradient(160deg,rgba(255,235,150,.55),rgba(160,60,0,.5))}
-.stage3d{perspective:none;position:relative}
-.stage3d::after{display:block;content:"";position:absolute;left:10%;right:10%;bottom:-8px;height:28px;background:radial-gradient(ellipse at center,rgba(30,2,0,.6),transparent 70%);filter:blur(7px);z-index:-1}
-.sheet{background:none;border:0;border-radius:22px;padding:14px;margin:22px 8px 24px;color:#1a0a05;perspective:900px;transform:none;animation:none;box-shadow:none}
+.stage3d{position:relative}
+.stage3d::after{display:block;content:"";position:absolute;left:10%;right:10%;bottom:-8px;height:28px;background:radial-gradient(ellipse at center,rgba(30,2,0,.45),transparent 70%);filter:blur(7px);z-index:-1}
+.sheet{background:none;border:0;border-radius:22px;padding:14px;margin:22px 8px 24px;color:#fff;perspective:900px;transform:none;animation:none;box-shadow:none}
 .sheet::before{filter:invert(1) drop-shadow(0 0 6px rgba(255,210,130,.9));transform:none;z-index:2}
-.sheet::after{display:block;content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;z-index:3;transform:none;background:linear-gradient(115deg,transparent calc(var(--hx,50%) - 30%),rgba(255,255,255,.12) calc(var(--hx,50%) - 14%),rgba(130,255,235,.09) calc(var(--hx,50%) - 4%),rgba(255,130,220,.09) calc(var(--hx,50%) + 6%),rgba(255,230,120,.12) calc(var(--hx,50%) + 16%),transparent calc(var(--hx,50%) + 30%))}
-.plate{display:block;position:absolute;inset:0;border-radius:22px;z-index:0;pointer-events:none;border:3px solid transparent;
-background:linear-gradient(165deg,#5b1608,#33090a 55%,#1f0504) padding-box,conic-gradient(from var(--ang),#ffb347,#ff5a8a,#7a5cff,#2de2e6,#ffe36e,#ffb347) border-box;
+.sheet::after{display:none}
+.frost{position:absolute;inset:3px;border-radius:20px;z-index:0;pointer-events:none;backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3)}
+.plate{display:block;position:absolute;inset:0;border-radius:22px;z-index:0;pointer-events:none;border:2px solid transparent;
+background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(50,5,0,.5) 42%,rgba(30,3,0,.62)) padding-box,conic-gradient(from var(--ang),#ffb347,#ff5a8a,#7a5cff,#2de2e6,#ffe36e,#ffb347) border-box;
 transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));animation:spin 7s linear infinite;
-box-shadow:0 1px 0 #7a2a10,0 2px 0 #6e2610,0 3px 0 #62210f,0 4px 0 #561d0e,0 5px 0 #4a190d,0 6px 0 #3e150c,0 7px 0 #32110b,0 8px 0 #290e0a,0 26px 44px rgba(20,2,0,.6),0 0 30px rgba(255,160,60,.35)}
-.plate::after{content:none}
+box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 22px rgba(255,200,120,.18),0 0 26px rgba(255,160,60,.4),0 26px 44px rgba(20,2,0,.5)}
+.plate::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+background:radial-gradient(circle at var(--mx,38%) var(--my,22%),rgba(255,255,255,.36),rgba(255,255,255,.08) 30%,transparent 55%),linear-gradient(115deg,transparent calc(var(--hx,50%) - 32%),rgba(255,255,255,.12) calc(var(--hx,50%) - 15%),rgba(130,255,235,.12) calc(var(--hx,50%) - 4%),rgba(255,130,220,.12) calc(var(--hx,50%) + 6%),rgba(255,230,120,.14) calc(var(--hx,50%) + 17%),transparent calc(var(--hx,50%) + 34%))}
 .sheetin{position:relative;z-index:1;transform:translate(var(--px,0px),var(--py,0px))}
-.hdr{gap:5px;margin-bottom:9px}
-.hdr b{transform:none;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 5px 0 #8a2a0a,0 7px 8px rgba(0,0,0,.4);text-shadow:0 2px 0 rgba(0,0,0,.25);padding:9px 0 6px;font-size:clamp(1.5rem,8.5vw,2.2rem)}
-.grid{gap:8px 6px}
-.sq{background:linear-gradient(180deg,#fff,#f6e6d8);color:#1a0a05;border:2px solid #1a0a05;text-shadow:none;transform:none!important;font-size:clamp(.64rem,3vw,.82rem);font-weight:800;
-box-shadow:inset 0 2px 0 #fff,0 4px 0 #b5693a,0 5px 0 #1a0a05,0 8px 10px rgba(0,0,0,.45)}
-.sq:hover{background:linear-gradient(180deg,#fffaf2,#ffe9d2)}
-.sq:active{background:#ffe2c4;top:3px;box-shadow:inset 0 2px 0 #fff,0 1px 0 #b5693a,0 2px 0 #1a0a05,0 3px 4px rgba(0,0,0,.4)}
-.sq em{color:#8a5a40;opacity:1;text-shadow:none;font-weight:800}
-.sq.done{background:linear-gradient(180deg,#fff0d0,#ffd79a);border-color:#8a2a0a;box-shadow:inset 0 2px 0 #fff6e0,0 4px 0 #b5521a,0 5px 0 #1a0a05,0 8px 10px rgba(0,0,0,.45)}
-.sq.done::after{border:3px solid #c4300f;background:rgba(242,106,31,.2);box-shadow:none;transform:none}
-.sq.done::before{color:#c4300f}
-.sq.free{background:linear-gradient(180deg,#ffd77a,#f26a1f);border-color:#1a0a05;box-shadow:inset 0 2px 0 rgba(255,255,255,.6),0 4px 0 #a8420f,0 5px 0 #1a0a05,0 8px 10px rgba(0,0,0,.45)}
-.sq.free span{color:#1a0a05;border-color:#1a0a05;text-shadow:none}
-.sq.win{background:linear-gradient(180deg,#fff7b8,#ffe06a)}
-.sq.pic{border-color:#fff;box-shadow:0 0 0 2px #1a0a05,0 5px 0 #b5693a,0 6px 0 #1a0a05,0 9px 10px rgba(0,0,0,.45)}
+.hdr{gap:5px;margin-bottom:8px}
+.hdr b{transform:none;box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -4px 0 rgba(0,0,0,.18),0 6px 10px rgba(20,2,0,.35);text-shadow:0 2px 0 rgba(0,0,0,.25);padding:9px 0 6px;font-size:clamp(1.5rem,8.5vw,2.2rem)}
+.grid{gap:6px}
+.sq{background:linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,255,255,.07) 55%,rgba(20,2,0,.25));color:#fff;border:1.5px solid rgba(255,255,255,.62);text-shadow:0 1px 3px rgba(0,0,0,.75);transform:none!important;font-size:clamp(.64rem,3vw,.82rem);font-weight:800;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -6px 10px rgba(0,0,0,.22),0 6px 10px rgba(20,2,0,.3)}
+.sq:hover{background:linear-gradient(160deg,rgba(255,255,255,.4),rgba(255,255,255,.12) 55%,rgba(20,2,0,.2))}
+.sq:active{background:linear-gradient(160deg,rgba(255,255,255,.5),rgba(255,255,255,.2))}
+.sq em{color:rgba(255,255,255,.88);opacity:1;text-shadow:0 1px 2px rgba(0,0,0,.7);font-weight:800}
+.sq.done{background:radial-gradient(circle at 50% 42%,rgba(255,215,122,.55),rgba(190,70,10,.4));border-color:#ffd77a;box-shadow:inset 0 0 14px rgba(255,200,100,.5),0 0 14px rgba(255,190,90,.65),0 6px 10px rgba(20,2,0,.3)}
+.sq.done::after{border:3px solid #ffd77a;background:rgba(255,200,100,.14);box-shadow:0 0 10px rgba(255,210,120,.85);transform:none}
+.sq.done::before{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.sq.free{background:linear-gradient(160deg,rgba(255,215,122,.95),rgba(242,106,31,.9));border-color:#fff;box-shadow:inset 0 2px 0 rgba(255,255,255,.6),0 0 16px rgba(255,200,100,.7),0 6px 10px rgba(20,2,0,.3)}
+.sq.free span{color:#fff;border-color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.sq.win{background:linear-gradient(160deg,rgba(255,235,150,.65),rgba(190,80,10,.4))}
+.sq.pic{border-color:#fff;box-shadow:0 0 14px rgba(255,210,130,.75),0 6px 10px rgba(20,2,0,.35)}
 .sq.pic em{color:#fff;text-shadow:0 0 3px #000}
 .sq.done.pic::before{color:#c4300f;text-shadow:none}
-.sc{background:#f6e6d8;border:0;box-shadow:0 3px 0 #b5693a,0 4px 0 #1a0a05}.sc .n{color:#8a5a40}.sc.has .n{color:#fff;text-shadow:0 0 3px #000}.sc.d{background:#f26a1f}.sc.has{border:0}
-.foot{margin-top:12px;text-align:center;font-weight:800;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#ffd9b8}
+.sc{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}.sc .n{color:rgba(255,255,255,.88)}.sc.has .n{color:#fff;text-shadow:0 0 3px #000}.sc.d{background:#f26a1f}.sc.has{border-color:#fff}
+.foot{margin-top:12px;text-align:center;font-weight:800;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#ffe3c8;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+/* other panels: glass too, but static (no tilt) */
+.card{background:radial-gradient(120% 90% at 0% 0%,rgba(255,255,255,.26),transparent 55%),linear-gradient(rgba(50,5,0,.34),rgba(50,5,0,.42));backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(255,255,255,.1),0 14px 36px rgba(60,5,0,.3);text-shadow:0 1px 3px rgba(0,0,0,.4)}
+#timer{background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.26),transparent 55%),linear-gradient(rgba(50,5,0,.4),rgba(50,5,0,.48));backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 28px rgba(40,5,0,.35)}
+dialog{background:rgba(255,255,255,.84);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.75)}
 .hide,.fin.hide,.live.hide,.show.hide{display:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -180,8 +186,8 @@ box-shadow:inset 0 2px 0 #fff,0 4px 0 #b5693a,0 5px 0 #1a0a05,0 8px 10px rgba(0,
 <section id="play" class="hide"><h1>Human Bingo</h1><div class="sub">School of Computing</div>
 <div class="card"><div id="whoami"></div><div id="prog">0 of 24 completed</div><div class="bar"><i id="fill"></i></div><div class="hint" id="msg" style="margin-top:8px">Tap a box, find the matching person, ask permission, and take a selfie together.</div></div>
 <div id="fcard" class="card hide"><div class="lbl">Final card</div><div id="fctext" style="font-weight:800;line-height:1.4"></div></div>
-<div class="stage3d"><div class="sheet" id="sheet3d"><div class="plate"></div><div class="sheetin"><div class="hdr" aria-hidden="true"><b>B</b><b>I</b><b>N</b><b>G</b><b>O</b></div><div id="grid" class="grid" role="grid" aria-label="Bingo card"></div><div class="foot">Complete all 24 boxes &bull; First 5 win</div></div></div></div>
-<div class="row" style="justify-content:center"><button id="tilt" class="alt hide">Enable 3D tilt</button><button id="savecard"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>Save my card</button></div></section>
+<div class="stage3d"><div class="sheet" id="sheet3d"><div class="frost"></div><div class="plate"></div><div class="sheetin"><div class="hdr" aria-hidden="true"><b>B</b><b>I</b><b>N</b><b>G</b><b>O</b></div><div id="grid" class="grid" role="grid" aria-label="Bingo card"></div><div class="foot">Complete all 24 boxes &bull; First 5 win</div></div></div></div>
+<div class="row" style="justify-content:center"><button id="tilt" class="alt hide">Enable tilt (motion access)</button><button id="savecard"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>Save my card</button></div></section>
 <section id="admin" class="card hide"><h2>Host Dashboard</h2><div class="row" style="margin:0 0 8px"><button id="toLive"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Open live board</button></div><div id="astat"></div>
 <div class="row" style="align-items:center"><label for="mins" style="font-weight:800">Minutes</label><input id="mins" type="number" min="1" max="120" value="10" style="width:84px;margin:0"><button id="go" class="red">START TIMER</button><button id="reset" class="alt">Reset</button></div>
 <div class="row"><b style="width:100%">Add or remove time</b><button class="alt adj" data-ms="-300000">−5 min</button><button class="alt adj" data-ms="-60000">−1 min</button><button class="alt adj" data-ms="-30000">−30 s</button><button class="alt adj" data-ms="30000">+30 s</button><button class="alt adj" data-ms="60000">+1 min</button><button class="alt adj" data-ms="300000">+5 min</button><button id="endnow" class="red">End now</button></div><div class="row"><button id="startshow" class="red"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3"/><path d="M12 13v4M8 20h8M10 17h4"/></svg>Start winners showcase</button></div><div class="row"><button id="zip" class="alt"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>Download all photos</button><button id="clr" class="alt">Delete all photos</button></div>
@@ -191,7 +197,7 @@ box-shadow:inset 0 2px 0 #fff,0 4px 0 #b5693a,0 5px 0 #1a0a05,0 8px 10px rgba(0,
 <div id="live" class="live hide" role="dialog" aria-label="Live board"><canvas class="bgc" aria-hidden="true"></canvas><div class="lhead"><div class="livetitle">Human Bingo<br>Live board</div><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lshow" class="alt"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3"/><path d="M12 13v4M8 20h8M10 17h4"/></svg>Winners showcase</button><button id="lclose" class="alt">Close live board</button></div><div id="lwin"></div><div id="lempty" class="hide">Waiting for players to join…</div><div id="lgrid"></div></div>
 <div id="show" class="show hide" role="dialog" aria-label="Winners showcase"><canvas class="bgc" aria-hidden="true"></canvas><div class="shin">
 <div class="sub" style="margin:0">Winners showcase</div><div id="shrank">&nbsp;</div><div id="shname"></div><div id="shcount"></div>
-<div class="sheet shsheet"><div class="plate"></div><div class="sheetin"><div id="shgrid"></div></div></div>
+<div class="sheet shsheet"><div class="frost"></div><div class="plate"></div><div class="sheetin"><div id="shgrid"></div></div></div>
 <div id="shchips" class="chips"></div>
 <div id="shctl" class="hide"><button id="shprev" class="alt">← Prev</button><button id="shnext">Next →</button><button id="shhide" class="alt">Hide showcase</button></div>
 <div class="hint" id="shnote" style="text-align:center"></div></div></div>
@@ -294,20 +300,20 @@ const g1=x.createLinearGradient(0,0,W*.4,H);g1.addColorStop(0,"#c92a0e");g1.addC
 const g2=x.createRadialGradient(W/2,H+60,20,W/2,H+60,W*.85);g2.addColorStop(0,"rgba(255,215,122,.95)");g2.addColorStop(1,"rgba(255,215,122,0)");x.fillStyle=g2;x.fillRect(0,0,W,H);bgScene(x,W,H,2.4,1);ribbons(x,W,H,2.4,1);
 x.textAlign="center";x.fillStyle="#fff";x.font="108px "+HD;x.shadowColor="rgba(60,5,0,.45)";x.shadowBlur=24;x.shadowOffsetY=8;x.fillText("HUMAN BINGO",W/2,170);x.shadowColor="transparent";
 x.font="800 30px "+SANS;x.fillText("S C H O O L   O F   C O M P U T I N G",W/2,226);x.font="50px "+HD;x.fillText((myName||"PLAYER").toUpperCase(),W/2,302);
-const gp=x.createLinearGradient(PAD,HEAD,PAD+G,HEAD+G);gp.addColorStop(0,"#5b1608");gp.addColorStop(.55,"#33090a");gp.addColorStop(1,"#1f0504");rr(x,PAD-20,HEAD+2,G+40,BING+G+36,26,"#290e0a");rr(x,PAD-20,HEAD-10,G+40,BING+G+36,26,gp);const gb=x.createLinearGradient(0,HEAD,W,HEAD+G);["#ffb347","#ff5a8a","#7a5cff","#2de2e6","#ffe36e","#ffb347"].forEach((c,i)=>gb.addColorStop(i/5,c));x.strokeStyle=gb;x.lineWidth=6;x.stroke();x.strokeStyle="#fff";x.lineWidth=10;x.lineCap="square";
+const gp=x.createLinearGradient(PAD,HEAD,PAD+G,HEAD+G);gp.addColorStop(0,"rgba(255,255,255,.28)");gp.addColorStop(.42,"rgba(50,5,0,.6)");gp.addColorStop(1,"rgba(30,3,0,.78)");rr(x,PAD-20,HEAD-10,G+40,BING+G+36,26,gp);const gb=x.createLinearGradient(0,HEAD,W,HEAD+G);["#ffb347","#ff5a8a","#7a5cff","#2de2e6","#ffe36e","#ffb347"].forEach((c,i)=>gb.addColorStop(i/5,c));x.strokeStyle=gb;x.lineWidth=6;x.stroke();x.strokeStyle="#fff";x.lineWidth=10;x.lineCap="square";
 const sx=PAD-30,sy=HEAD-20,sw=G+60,sh=BING+G+56;[[sx,sy,1,1],[sx+sw,sy,-1,1],[sx,sy+sh,1,-1],[sx+sw,sy+sh,-1,-1]].forEach(([a,b,dx,dy])=>{x.beginPath();x.moveTo(a+dx*70,b);x.lineTo(a,b);x.lineTo(a,b+dy*70);x.stroke()});
 const hc=["#f77f2a","#f26a1f","#e8541a","#d93f12","#c92a0e"];"BINGO".split("").forEach((L,i)=>{rr(x,PAD+i*C+3,HEAD+11,C-6,BING-8,14,"#8a2a0a");rr(x,PAD+i*C+3,HEAD+4,C-6,BING-8,14,hc[i]);x.fillStyle="#fff";x.font="76px "+HD;x.fillText(L,PAD+i*C+C/2,HEAD+BING-30)});
 let n=0;const gy=HEAD+BING+8;const foxImg=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=document.querySelector(".logos img:nth-child(2)").src});
-for(let i=0;i<25;i++){const cx=PAD+(i%5)*C+3,cy=gy+Math.floor(i/5)*C+3,s2=C-6;rr(x,cx,cy+5,s2,s2,14,"#b5693a");rr(x,cx,cy,s2,s2,14,"#fff");
-if(i===12){rr(x,cx,cy,s2,s2,14,"#ffb347","#1a0a05");x.strokeStyle="#1a0a05";x.lineWidth=6;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.34,0,7);x.stroke();x.fillStyle="#1a0a05";x.font="32px "+HD;x.fillText("FREE",cx+s2/2,cy+s2/2+11);if(foxImg)x.drawImage(foxImg,cx+s2*.62,cy+s2*.64,s2*.3,s2*.3);continue}
+for(let i=0;i<25;i++){const cx=PAD+(i%5)*C+3,cy=gy+Math.floor(i/5)*C+3,s2=C-6;rr(x,cx,cy,s2,s2,14,"rgba(255,255,255,.17)");
+if(i===12){rr(x,cx,cy,s2,s2,14,"#f58a2a","#fff");x.strokeStyle="#fff";x.lineWidth=6;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.34,0,7);x.stroke();x.fillStyle="#fff";x.font="32px "+HD;x.fillText("FREE",cx+s2/2,cy+s2/2+11);if(foxImg)x.drawImage(foxImg,cx+s2*.62,cy+s2*.64,s2*.3,s2*.3);continue}
 const t=cells()[i],isD=!!done[i];if(isD)n++;
 let im=null;if(isD&&pics[i])im=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=pics[i]});
 if(im){x.save();rr(x,cx,cy,s2,s2,14);x.clip();x.drawImage(im,cx,cy,s2,s2);x.fillStyle="rgba(26,10,5,.78)";x.fillRect(cx,cy+s2-62,s2,62);x.restore();x.fillStyle="#fff";x.font="800 24px "+SANS;const l2=wrapText(x,t,s2-16).slice(0,2);l2.forEach((q,k)=>x.fillText(q,cx+s2/2,cy+s2-36+k*26+(l2.length===1?12:0)))}
-else{x.fillStyle="#1a0a05";let fs=28,l2=[];for(;fs>=13;fs--){x.font="800 "+fs+"px "+SANS;l2=wrapText(x,t,s2-18);if(l2.length<=3&&l2.every(q=>x.measureText(q).width<=s2-14))break}l2=l2.slice(0,3);const y0=cy+s2/2-(l2.length-1)*fs*.6+fs*.3;l2.forEach((q,k)=>x.fillText(q,cx+s2/2,y0+k*fs*1.2));
-if(isD){x.fillStyle="rgba(242,106,31,.3)";x.strokeStyle="#c4300f";x.lineWidth=8;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.42,0,7);x.fill();x.stroke()}}
-x.textAlign="left";x.fillStyle=im?"#fff":"#8a6a5a";x.font="800 21px "+SANS;x.fillText(String(num(i)),cx+10,cy+27);x.textAlign="center";
+else{x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=4;let fs=28,l2=[];for(;fs>=13;fs--){x.font="800 "+fs+"px "+SANS;l2=wrapText(x,t,s2-18);if(l2.length<=3&&l2.every(q=>x.measureText(q).width<=s2-14))break}l2=l2.slice(0,3);const y0=cy+s2/2-(l2.length-1)*fs*.6+fs*.3;l2.forEach((q,k)=>x.fillText(q,cx+s2/2,y0+k*fs*1.2));x.shadowColor="transparent";x.shadowBlur=0;
+if(isD){x.fillStyle="rgba(255,200,100,.28)";x.strokeStyle="#ffd77a";x.lineWidth=8;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.42,0,7);x.fill();x.stroke()}}
+x.textAlign="left";x.fillStyle=im?"#fff":"rgba(255,255,255,.88)";x.font="800 21px "+SANS;x.fillText(String(num(i)),cx+10,cy+27);x.textAlign="center";
 if(im){x.fillStyle="#fff";x.beginPath();x.arc(cx+s2-24,cy+24,16,0,7);x.fill();x.fillStyle="#c4300f";x.font="900 22px "+SANS;x.fillText("✓",cx+s2-24,cy+32)}
-rr(x,cx,cy,s2,s2,14,null,"#1a0a05")}
+rr(x,cx,cy,s2,s2,14,null,"rgba(255,255,255,.65)")}
 const L=winLines().length;x.fillStyle="#fff";x.font="52px "+HD;x.fillText(n+" OF 24 COMPLETED",W/2,gy+G+90);
 x.font="800 30px "+SANS;x.fillText((n===24?"FULL CARD! ":L?L+" BINGO LINE"+(L>1?"S":"")+" • ":"")+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"}).toUpperCase(),W/2,gy+G+142);return cv}
 let cardBlob=null;
@@ -353,14 +359,18 @@ while(g++<18&&fs>6.5&&over()){fs-=.5;sp.style.fontSize=fs+"px"}
 if(over())sp.style.overflowWrap="anywhere"})}
 addEventListener("resize",fitCells);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitCells);
 
-(function(){const sh=$("sheet3d");if(!sh)return;let tx=0,ty=0,rx=0,ry=0,input=-9999;const rm=matchMedia("(prefers-reduced-motion: reduce)").matches,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
-addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const r=sh.getBoundingClientRect();tx=cl(-((e.clientY-(r.top+r.height/2))/innerHeight)*16,-12,12);ty=cl(((e.clientX-(r.left+r.width/2))/innerWidth)*20,-14,14);input=performance.now()});
-addEventListener("pointerdown",()=>{input=performance.now()},{passive:true});
-function onOri(e){if(e.beta==null)return;tx=cl((e.beta-55)*.25,-10,10);ty=cl(e.gamma*.25,-12,12);input=performance.now()}
+(function(){const sh=$("sheet3d");if(!sh)return;let tx=0,ty=0,rx=0,ry=0,mx=38,my=22,tmx=38,tmy=22,input=-9999,b0=null,g0=null;
+const rm=matchMedia("(prefers-reduced-motion: reduce)").matches,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const r=sh.getBoundingClientRect(),dx=cl((e.clientX-(r.left+r.width/2))/(innerWidth/2),-1,1),dy=cl((e.clientY-(r.top+r.height/2))/(innerHeight/2),-1,1);
+ty=dx*16;tx=-dy*14;tmx=cl((e.clientX-r.left)/r.width*100,-15,115);tmy=cl((e.clientY-r.top)/r.height*100,-15,115);input=performance.now()});
+document.addEventListener("mouseleave",()=>{input=-9999});
+function onOri(e){if(e.beta==null||e.gamma==null)return;if(b0===null){b0=e.beta;g0=e.gamma}b0+=(e.beta-b0)*.015;g0+=(e.gamma-g0)*.015;
+tx=cl(-(e.beta-b0)*.9,-18,18);ty=cl((e.gamma-g0)*.9,-18,18);tmx=50+ty*2.5;tmy=50-tx*2.5;input=performance.now()}
 if("DeviceOrientationEvent" in window){if(typeof DeviceOrientationEvent.requestPermission==="function"){const bt=$("tilt");if(bt){bt.classList.remove("hide");bt.onclick=async()=>{try{if(await DeviceOrientationEvent.requestPermission()==="granted"){addEventListener("deviceorientation",onOri);bt.classList.add("hide")}}catch(e){}}}}else addEventListener("deviceorientation",onOri)}
 function loop(ts){requestAnimationFrame(loop);if(document.hidden||$("play").classList.contains("hide"))return;const idle=ts-input>2500;
-if(idle){if(rm){tx=0;ty=0}else{tx=Math.sin(ts/2600)*3;ty=Math.sin(ts/3400+1)*6}}
-rx+=(tx-rx)*.08;ry+=(ty-ry)*.08;sh.style.setProperty("--rx",rx.toFixed(2)+"deg");sh.style.setProperty("--ry",ry.toFixed(2)+"deg");sh.style.setProperty("--hx",(50+ry*3.6)+"%");sh.style.setProperty("--px",Math.round(ry*.35)+"px");sh.style.setProperty("--py",Math.round(-rx*.35)+"px")}
+if(idle){if(rm){tx=0;ty=0}else{tx=Math.sin(ts/2600)*3;ty=Math.sin(ts/3400+1)*6}tmx=50+ty*3;tmy=30+tx*3}
+rx+=(tx-rx)*.12;ry+=(ty-ry)*.12;mx+=(tmx-mx)*.15;my+=(tmy-my)*.15;
+const S=sh.style;S.setProperty("--rx",rx.toFixed(2)+"deg");S.setProperty("--ry",ry.toFixed(2)+"deg");S.setProperty("--hx",(50+ry*3.4)+"%");S.setProperty("--mx",mx.toFixed(1)+"%");S.setProperty("--my",my.toFixed(1)+"%");S.setProperty("--px",Math.round(ry*.35)+"px");S.setProperty("--py",Math.round(-rx*.35)+"px")}
 requestAnimationFrame(loop)})();
 stage();setInterval(tick,250);render();
 function open(i){if(i===12)return;cur=i;blob=null;if(!engaged){engaged=true;report()}$("dp").textContent="Box "+num(i)+": "+cells()[i];$("err").textContent="";
