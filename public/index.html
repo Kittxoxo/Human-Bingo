@@ -267,7 +267,7 @@ background:radial-gradient(60% 50% at 15% 10%,#f26a1f 0,transparent 65%),radial-
 const DEF=["Same birthday","Polyglot","Musician","Went abroad","Can dance","Same fave color","Baby of family","Quirky hobby","Met a star","Same music taste","Hidden talent","Same fave food","Joined a contest","Morning person","Has a pet","Movie tip","Birth month twin","Fun fact","Tried odd food","Same hobby","Wants a new skill","School club","Loves nature","Same dream job"];
 
 const $=id=>document.getElementById(id);document.documentElement.style.setProperty("--fox","url("+document.querySelector(".logos img:nth-child(2)").src+")");let DUR=600000;
-let prompts=DEF.slice(),state={status:"waiting"},done={},pics={},lines=0,cur=-1,stream,blob,facing="user",isAdmin=false,off=0,photosTotal=0,finDone=false,finBegun=false,FIN=0,mirror=true,engaged=false,reported=null,liveOpen=false,liveTimer=null,myName="",wantLive=false,seenDone=new Set(),rendered=false;
+let prompts=DEF.slice(),state={status:"waiting"},done={},pics={},lines=0,cur=-1,stream,blob,facing="user",isAdmin=false,off=0,photosTotal=0,finDone=false,finBegun=false,FIN=0,mirror=true,engaged=false,reported=null,liveOpen=false,liveTimer=null,myName="",wantLive=false,promptsDirty=false,seenDone=new Set(),rendered=false;
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 done=ls.get("hb-done")||{};pics=ls.get("hb-pics")||{};myName=ls.get("hb-name")||"";engaged=!!myName;let pid=ls.get("hb-pid");if(!pid){pid=Array.from(crypto.getRandomValues(new Uint8Array(10))).map(b=>(b%36).toString(36)).join("");ls.set("hb-pid",pid)}
 const cells=()=>prompts.slice(0,12).concat(["FREE SPACE"],prompts.slice(12,24));const num=i=>i<12?i+1:i;
@@ -460,7 +460,7 @@ function cheer(){const full=Object.keys(done).length===24;$("wh").textContent=fu
 for(let i=0;i<30;i++){const b=document.createElement("b");b.style.left=Math.random()*100+"%";b.style.background=["#ffb347","#fff","#c4300f","#ffd77a","#f26a1f"][i%5];b.style.width=(6+Math.random()*8)+"px";b.style.height=(10+Math.random()*12)+"px";b.style.borderRadius="2px";b.style.animationDelay=Math.random()+"s";c.appendChild(b)}document.body.appendChild(c);setTimeout(()=>c.remove(),4000)}
 $("wc").onclick=()=>$("win").close();
 $("start").onclick=()=>{$("land").className="hide";$("play").className="";render()};
-function plist(){const p=$("plist");p.textContent="";prompts.forEach((t,i)=>{const r=document.createElement("label"),n=document.createElement("b"),e=document.createElement("input");r.className="prow";n.textContent=i+1;e.value=t;e.setAttribute("aria-label","Box "+(i+1));e.oninput=()=>prompts[i]=e.value;r.append(n,e);p.appendChild(r)})}
+function plist(){const p=$("plist");p.textContent="";prompts.forEach((t,i)=>{const r=document.createElement("label"),n=document.createElement("b"),e=document.createElement("input");r.className="prow";n.textContent=i+1;e.value=t;e.setAttribute("aria-label","Box "+(i+1));e.oninput=()=>{prompts[i]=e.value;promptsDirty=true};r.append(n,e);p.appendChild(r)})}
 $("prev").onclick=()=>{$("land").className="hide";$("play").className="";render()};
 let pw=sessionStorage.getItem("hb-pw")||"";
 async function api(path,opt){const r=await fetch(path,opt);if(!r.ok)throw new Error(r.status);return r.json()}
@@ -527,11 +527,11 @@ async function sync(){try{const t0=Date.now(),d=await api("/api/time"),t1=Date.n
 async function poll(){try{const d=await api(isAdmin?"/api/state?a="+Date.now():"/api/state");state=d.status==="running"?{status:"running",startedAt:d.startedAt}:{status:"waiting"};photosTotal=d.photos||0;DUR=d.duration||600000;sc=d.showcase||{open:false,rank:1};
 if((d.resetAt||0)!==(ls.get("hb-epoch")||0)){ls.set("hb-epoch",d.resetAt||0);wipeLocal(true)}
 if(state.status==="running"&&ls.get("hb-round")!==state.startedAt){ls.set("hb-round",state.startedAt);wipeLocal()}
-if(!isAdmin&&Array.isArray(d.prompts)&&d.prompts.length===24&&JSON.stringify(d.prompts)!==JSON.stringify(prompts)){prompts=d.prompts;render()}
+if(Array.isArray(d.prompts)&&d.prompts.length===24&&(!isAdmin||!promptsDirty)&&JSON.stringify(d.prompts)!==JSON.stringify(prompts)){prompts=d.prompts;render();if(isAdmin&&$("plist").children.length)plist()}
 tick();showcaseSync();report();if(ls.get("hb-consent")==="yes"&&Object.keys(done).length)upload()}catch(e){$("timer").textContent="Reconnecting…"}finally{splashEnd()}}
 $("go").onclick=async()=>{if(!confirm(photosTotal?"Start a NEW round? This deletes the "+photosTotal+" photos from the last round — download them first.":"Start the "+($("mins").value||10)+"-minute timer for everyone?"))return;try{await adminCall("start",{minutes:Math.round(+$("mins").value)||10});$("amsg").textContent="";poll()}catch(e){$("amsg").textContent="Could not start (already running or wrong password)."}};
 $("reset").onclick=async()=>{if(!confirm("Reset the game for everyone?\n\nThis clears every player's card, the live board and all collected photos. Download the photos first!"))return;try{await adminCall("reset");poll()}catch(e){$("amsg").textContent="Reset failed."}};
-$("save").onclick=async()=>{try{await adminCall("prompts",{prompts});$("amsg").textContent="Saved ✓"}catch(e){$("amsg").textContent="Save failed."}};
+$("save").onclick=async()=>{try{await adminCall("prompts",{prompts});promptsDirty=false;$("amsg").textContent="Saved ✓"}catch(e){$("amsg").textContent="Save failed."}};
 const crcT=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
 const crc32=b=>{let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=crcT[(c^b[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
 function makeZip(files){const enc=new TextEncoder();let off2=0;const parts=[],cd=[];
@@ -554,6 +554,7 @@ $("clr").onclick=async()=>{if(!confirm("Delete ALL collected photos? This can't 
 $("mdec").onclick=()=>{$("mins").value=Math.max(1,(parseInt($("mins").value,10)||10)-1)};$("minc").onclick=()=>{$("mins").value=Math.min(120,(parseInt($("mins").value,10)||10)+1)};
 document.querySelectorAll(".adj").forEach(b=>b.onclick=async()=>{try{await adminCall("adjust",{delta:+b.dataset.ms});$("amsg").textContent="Time updated ✓";poll()}catch(e){$("amsg").textContent="Can only change time while a round is running."}});
 $("endnow").onclick=async()=>{if(!confirm("End the game for everyone right now?"))return;try{await adminCall("endnow");$("amsg").textContent="Game ended.";poll()}catch(e){$("amsg").textContent="No round is running."}};
+async function freshPrompts(){if(promptsDirty)return;try{const d=await api("/api/state?c="+Date.now());if(Array.isArray(d.prompts)&&d.prompts.length===24)prompts=d.prompts}catch(e){}}
 async function fetchAllPhotos(){const map=new Map();let cursor=0,n=0;
 while(cursor!==null){const d=await adminCall("photos",{cursor,limit:20});for(const it of d.items){const[pid,k]=it.id.split(":");let o=map.get(pid);if(!o){o={};map.set(pid,o)}o[+k]=it.src;n++}cursor=d.next;$("lmsg").textContent="Loading photos… "+n}
 return map}
@@ -561,17 +562,17 @@ async function makeCardBlob(p,rank,ph){const D={};for(let i=0;i<25;i++)if(i!==12
 const safeName=n=>String(n||"player").replace(/[^\w]+/g,"_").replace(/^_+|_+$/g,"")||"player";
 let bigPid=null;
 $("cards").onclick=async()=>{const endL=startLoad("Building cards…",900);$("amsg").textContent="Building cards…";
-try{const bd=await adminCall("board"),photos=await fetchAllPhotos(),fin=phase()==="FINISHED",ps=bd.players.filter(p=>bits(p.mask)>0).sort(cmpRank);
+try{await freshPrompts();const bd=await adminCall("board"),photos=await fetchAllPhotos(),fin=phase()==="FINISHED",ps=bd.players.filter(p=>bits(p.mask)>0).sort(cmpRank);
 if(!ps.length){$("amsg").textContent="No cards yet.";return}
 const files=[];for(let k=0;k<ps.length;k++){const p=ps[k];$("lmsg").textContent="Building card "+(k+1)+" of "+ps.length+"…";
 const blob=await makeCardBlob(p,fin&&k<5?k+1:0,photos.get(p.pid));files.push({name:String(k+1).padStart(2,"0")+"-"+safeName(p.name)+"-"+bits(p.mask)+"of24.jpg",data:new Uint8Array(await blob.arrayBuffer())})}
 const a=document.createElement("a");a.href=URL.createObjectURL(makeZip(files));a.download="human-bingo-cards.zip";a.click();$("amsg").textContent="Downloaded "+files.length+" cards"}
 catch(e){$("amsg").textContent="Could not build the cards."}finally{endL()}};
 $("lbdl").onclick=async()=>{if(!bigPid)return;const p=lastPlayers.find(x=>x.pid===bigPid);if(!p)return;const endL=startLoad("Building card…",700);
-try{const r=await adminCall("playerphotos",{pid:bigPid}),ph={};for(const it of r.items)ph[it.i]=it.src;const fin=phase()==="FINISHED",k=lastPlayers.slice().sort(cmpRank).findIndex(x=>x.pid===bigPid);
+try{await freshPrompts();const r=await adminCall("playerphotos",{pid:bigPid}),ph={};for(const it of r.items)ph[it.i]=it.src;const fin=phase()==="FINISHED",k=lastPlayers.slice().sort(cmpRank).findIndex(x=>x.pid===bigPid);
 const blob=await makeCardBlob(p,fin&&k>=0&&k<5?k+1:0,ph),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="human-bingo-"+safeName(p.name)+".jpg";a.click()}
 catch(e){$("amsg").textContent="Could not build that card."}finally{endL()}};
-function enterAdmin(){isAdmin=true;$("admin").className="adm";plist();if(wantLive){wantLive=false;openLive()}}
+function enterAdmin(){isAdmin=true;$("admin").className="adm";plist();api("/api/state?a="+Date.now()).then(d=>{if(!promptsDirty&&Array.isArray(d.prompts)&&d.prompts.length===24){prompts=d.prompts;render();plist()}}).catch(()=>{});if(wantLive){wantLive=false;openLive()}}
 $("toAdmin").onclick=async()=>{if(isAdmin){$("admin").classList.toggle("hide");return}const x=prompt("Host password");if(!x)return;pw=x;try{await adminCall("check");sessionStorage.setItem("hb-pw",pw);enterAdmin()}catch(e){pw="";alert("Wrong password")}};
 (async()=>{$("adminLink").className="";if(pw){try{await adminCall("check");enterAdmin()}catch(e){pw="";sessionStorage.removeItem("hb-pw")}}await sync();poll();setInterval(poll,3000);setInterval(sync,20000);if(location.hash==="#live"){wantLive=true;if(isAdmin){wantLive=false;openLive()}else $("toAdmin").click()}})();
 </script></body></html>
