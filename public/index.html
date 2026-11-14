@@ -235,6 +235,7 @@ background:radial-gradient(60% 50% at 15% 10%,#f26a1f 0,transparent 65%),radial-
 <button class="irow" id="toLive" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span>Open live board</span><span class="chev">&#8250;</span></button>
 <button class="irow" id="startshow" type="button"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3"/><path d="M12 13v4M8 20h8M10 17h4"/></svg><span>Start winners showcase</span><span class="chev">&#8250;</span></button>
 <button class="irow" id="zip" type="button"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg><span>Download all photos</span><span class="chev">&#8250;</span></button>
+<button class="irow" id="cards" type="button"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M9 3v18"/></svg><span>Download all cards</span><span class="chev">&#8250;</span></button>
 <button class="irow danger" id="clr" type="button"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span>Delete all photos</span></button>
 </div>
 <div class="ioslabel">Prompts <span>centre box stays FREE</span></div>
@@ -252,7 +253,7 @@ background:radial-gradient(60% 50% at 15% 10%,#f26a1f 0,transparent 65%),radial-
 <div id="shctl" class="hide"><button id="shprev" class="alt">← Prev</button><button id="shnext">Next →</button><button id="shhide" class="alt">Hide showcase</button></div>
 <div class="hint" id="shnote" style="text-align:center"></div></div></div>
 <dialog id="zoom" aria-label="Photo"><img id="zimg" alt="" style="width:100%;border-radius:14px"><div id="zcap" style="font-weight:800;text-align:center;margin:8px 0"></div><div class="row" style="justify-content:center"><button id="zx" class="alt">Close</button></div></dialog>
-<dialog id="lbig" aria-label="Player card"><div id="lbigbody"></div><div class="row"><button id="lbx" class="alt">Close</button></div></dialog>
+<dialog id="lbig" aria-label="Player card"><div id="lbigbody"></div><div class="row"><button id="lbdl">Download card</button><button id="lbx" class="alt">Close</button></div></dialog>
 <dialog id="dlg" aria-label="Prompt"><h3 id="dp"></h3><p id="di">Find someone who matches this, ask their permission, then take a selfie together.</p>
 <div id="cam" class="hide"><video id="vid" playsinline muted></video><div class="row"><button id="snap"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Capture</button><button id="flip" class="alt">Switch camera</button><button id="mir" class="alt">Mirror: ON</button></div></div>
 <div id="pvw" class="hide"><img id="pv" class="pv" alt="Selfie preview"><div class="row"><button id="ok">✓ Confirm</button><button id="retake" class="alt">Retake</button><button id="dl" class="alt">Download Selfie</button></div></div>
@@ -341,33 +342,33 @@ fetchMissing(ps)}
 async function loadBoard(){try{renderBoard(await adminCall("board"))}catch(e){}}
 function openLive(){if(!isAdmin)return;liveOpen=true;$("live").classList.remove("hide");{const endL=startLoad("Loading live board…",900);loadBoard().finally(endL)}clearInterval(liveTimer);liveTimer=setInterval(loadBoard,2500)}
 function closeLive(){liveOpen=false;$("live").classList.add("hide");clearInterval(liveTimer);if(location.hash==="#live")history.replaceState(null,"",location.pathname)}
-function bigCard(pid){const k=cardEls.get(pid);if(!k)return;const c=k.el.cloneNode(true);c.style.order="";c.onclick=null;$("lbigbody").textContent="";$("lbigbody").appendChild(c);$("lbig").showModal()}
+function bigCard(pid){const k=cardEls.get(pid);if(!k)return;bigPid=pid;const c=k.el.cloneNode(true);c.style.order="";c.onclick=null;$("lbigbody").textContent="";$("lbigbody").appendChild(c);$("lbig").showModal()}
 $("toLive").onclick=openLive;$("lclose").onclick=closeLive;$("lbx").onclick=()=>$("lbig").close();
 function wrapText(x,t,maxW){const w=t.split(" "),lines=[];let l="";for(const a of w){const tt=l?l+" "+a:a;if(x.measureText(tt).width>maxW&&l){lines.push(l);l=a}else l=tt}if(l)lines.push(l);return lines}
 function rr(c,x,y,w,h,r,fill,stroke){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=4;c.stroke()}}
-async function drawCard(){try{await document.fonts.ready}catch(e){}
+async function drawCard(o){o=o||{name:myName,done:done,pics:pics};const D=o.done,PX=o.pics;try{await document.fonts.ready}catch(e){}
 const W=1080,PAD=60,HEAD=340,BING=120,G=W-PAD*2,C=G/5,H=HEAD+BING+G+250,HD='"Archivo Black",Impact,"Arial Black",sans-serif',SANS='Archivo,"Segoe UI",Arial,sans-serif';
 const cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
 const g1=x.createLinearGradient(0,0,W*.4,H);g1.addColorStop(0,"#c92a0e");g1.addColorStop(.55,"#e5521a");g1.addColorStop(1,"#f58a2a");x.fillStyle=g1;x.fillRect(0,0,W,H);
 const g2=x.createRadialGradient(W/2,H+60,20,W/2,H+60,W*.85);g2.addColorStop(0,"rgba(255,215,122,.95)");g2.addColorStop(1,"rgba(255,215,122,0)");x.fillStyle=g2;x.fillRect(0,0,W,H);bgScene(x,W,H,2.4,1);ribbons(x,W,H,2.4,1);
 x.textAlign="center";x.fillStyle="#fff";x.font="108px "+HD;x.shadowColor="rgba(60,5,0,.45)";x.shadowBlur=24;x.shadowOffsetY=8;x.fillText("HUMAN BINGO",W/2,170);x.shadowColor="transparent";
-x.font="800 30px "+SANS;x.fillText("S C H O O L   O F   C O M P U T I N G",W/2,226);x.font="50px "+HD;x.fillText((myName||"PLAYER").toUpperCase(),W/2,302);
+x.font="800 30px "+SANS;x.fillText("S C H O O L   O F   C O M P U T I N G",W/2,226);x.font="50px "+HD;x.fillText((o.name||"PLAYER").toUpperCase(),W/2,302);
 const gp=x.createLinearGradient(PAD,HEAD,PAD+G,HEAD+G);gp.addColorStop(0,"rgba(255,255,255,.28)");gp.addColorStop(.42,"rgba(50,5,0,.6)");gp.addColorStop(1,"rgba(30,3,0,.78)");rr(x,PAD-20,HEAD-10,G+40,BING+G+36,26,gp);const gb=x.createLinearGradient(0,HEAD,W,HEAD+G);["#ffb347","#ff5a8a","#7a5cff","#2de2e6","#ffe36e","#ffb347"].forEach((c,i)=>gb.addColorStop(i/5,c));x.strokeStyle=gb;x.lineWidth=6;x.stroke();x.strokeStyle="#fff";x.lineWidth=10;x.lineCap="square";
 const sx=PAD-30,sy=HEAD-20,sw=G+60,sh=BING+G+56;[[sx,sy,1,1],[sx+sw,sy,-1,1],[sx,sy+sh,1,-1],[sx+sw,sy+sh,-1,-1]].forEach(([a,b,dx,dy])=>{x.beginPath();x.moveTo(a+dx*70,b);x.lineTo(a,b);x.lineTo(a,b+dy*70);x.stroke()});
 const hc=["#f77f2a","#f26a1f","#e8541a","#d93f12","#c92a0e"];"BINGO".split("").forEach((L,i)=>{rr(x,PAD+i*C+3,HEAD+11,C-6,BING-8,14,"#8a2a0a");rr(x,PAD+i*C+3,HEAD+4,C-6,BING-8,14,hc[i]);x.fillStyle="#fff";x.font="76px "+HD;x.fillText(L,PAD+i*C+C/2,HEAD+BING-30)});
 let n=0;const gy=HEAD+BING+8;const foxImg=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=document.querySelector(".logos img:nth-child(2)").src});
 for(let i=0;i<25;i++){const cx=PAD+(i%5)*C+3,cy=gy+Math.floor(i/5)*C+3,s2=C-6;rr(x,cx,cy,s2,s2,14,"rgba(255,255,255,.17)");
 if(i===12){rr(x,cx,cy,s2,s2,14,"#f58a2a","#fff");x.strokeStyle="#fff";x.lineWidth=6;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.34,0,7);x.stroke();x.fillStyle="#fff";x.font="32px "+HD;x.fillText("FREE",cx+s2/2,cy+s2/2+11);if(foxImg)x.drawImage(foxImg,cx+s2*.62,cy+s2*.64,s2*.3,s2*.3);continue}
-const t=cells()[i],isD=!!done[i];if(isD)n++;
-let im=null;if(isD&&pics[i])im=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=pics[i]});
+const t=cells()[i],isD=!!D[i];if(isD)n++;
+let im=null;if(isD&&PX[i])im=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=PX[i]});
 if(im){x.save();rr(x,cx,cy,s2,s2,14);x.clip();x.drawImage(im,cx,cy,s2,s2);x.fillStyle="rgba(26,10,5,.78)";x.fillRect(cx,cy+s2-62,s2,62);x.restore();x.fillStyle="#fff";x.font="800 24px "+SANS;const l2=wrapText(x,t,s2-16).slice(0,2);l2.forEach((q,k)=>x.fillText(q,cx+s2/2,cy+s2-36+k*26+(l2.length===1?12:0)))}
 else{x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=4;let fs=28,l2=[];for(;fs>=13;fs--){x.font="800 "+fs+"px "+SANS;l2=wrapText(x,t,s2-18);if(l2.length<=3&&l2.every(q=>x.measureText(q).width<=s2-14))break}l2=l2.slice(0,3);const y0=cy+s2/2-(l2.length-1)*fs*.6+fs*.3;l2.forEach((q,k)=>x.fillText(q,cx+s2/2,y0+k*fs*1.2));x.shadowColor="transparent";x.shadowBlur=0;
 if(isD){x.fillStyle="rgba(255,200,100,.28)";x.strokeStyle="#ffd77a";x.lineWidth=8;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.42,0,7);x.fill();x.stroke()}}
 x.textAlign="left";x.fillStyle=im?"#fff":"rgba(255,255,255,.88)";x.font="800 21px "+SANS;x.fillText(String(num(i)),cx+10,cy+27);x.textAlign="center";
 if(im){x.fillStyle="#fff";x.beginPath();x.arc(cx+s2-24,cy+24,16,0,7);x.fill();x.fillStyle="#c4300f";x.font="900 22px "+SANS;x.fillText("✓",cx+s2-24,cy+32)}
 rr(x,cx,cy,s2,s2,14,null,"rgba(255,255,255,.65)")}
-const L=winLines().length;x.fillStyle="#fff";x.font="52px "+HD;x.fillText(n+" OF 24 COMPLETED",W/2,gy+G+90);
-x.font="800 30px "+SANS;x.fillText((n===24?"FULL CARD! ":L?L+" BINGO LINE"+(L>1?"S":"")+" • ":"")+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"}).toUpperCase(),W/2,gy+G+142);return cv}
+const L=linesOf(maskOf(D)).length;x.fillStyle="#fff";x.font="52px "+HD;x.fillText(n+" OF 24 COMPLETED",W/2,gy+G+90);
+x.font="800 30px "+SANS;x.fillText((o.rank?ORD[o.rank-1]+" PLACE \u2022 ":"")+(n===24?"FULL CARD! ":L?L+" BINGO LINE"+(L>1?"S":"")+" • ":"")+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"}).toUpperCase(),W/2,gy+G+142);return cv}
 let cardBlob=null;
 $("savecard").onclick=async()=>{$("savecard").disabled=true;const endL=startLoad("Making your card…",900);try{const cv=await drawCard();cardBlob=await new Promise(r=>cv.toBlob(r,"image/jpeg",.92));$("cimg").src=URL.createObjectURL(cardBlob);
 const f=new File([cardBlob],"my-human-bingo-card.jpg",{type:"image/jpeg"});$("cshare").className=(navigator.canShare&&navigator.canShare({files:[f]}))?"alt":"alt hide";$("cdlg").showModal()}catch(e){alert("Sorry, couldn't make the card image.")}endL();$("savecard").disabled=false};
@@ -553,6 +554,23 @@ $("clr").onclick=async()=>{if(!confirm("Delete ALL collected photos? This can't 
 $("mdec").onclick=()=>{$("mins").value=Math.max(1,(parseInt($("mins").value,10)||10)-1)};$("minc").onclick=()=>{$("mins").value=Math.min(120,(parseInt($("mins").value,10)||10)+1)};
 document.querySelectorAll(".adj").forEach(b=>b.onclick=async()=>{try{await adminCall("adjust",{delta:+b.dataset.ms});$("amsg").textContent="Time updated ✓";poll()}catch(e){$("amsg").textContent="Can only change time while a round is running."}});
 $("endnow").onclick=async()=>{if(!confirm("End the game for everyone right now?"))return;try{await adminCall("endnow");$("amsg").textContent="Game ended.";poll()}catch(e){$("amsg").textContent="No round is running."}};
+async function fetchAllPhotos(){const map=new Map();let cursor=0,n=0;
+while(cursor!==null){const d=await adminCall("photos",{cursor,limit:20});for(const it of d.items){const[pid,k]=it.id.split(":");let o=map.get(pid);if(!o){o={};map.set(pid,o)}o[+k]=it.src;n++}cursor=d.next;$("lmsg").textContent="Loading photos… "+n}
+return map}
+async function makeCardBlob(p,rank,ph){const D={};for(let i=0;i<25;i++)if(i!==12&&((p.mask>>i)&1))D[i]=1;const cv=await drawCard({name:p.name,done:D,pics:ph||{},rank});return new Promise(r=>cv.toBlob(r,"image/jpeg",.9))}
+const safeName=n=>String(n||"player").replace(/[^\w]+/g,"_").replace(/^_+|_+$/g,"")||"player";
+let bigPid=null;
+$("cards").onclick=async()=>{const endL=startLoad("Building cards…",900);$("amsg").textContent="Building cards…";
+try{const bd=await adminCall("board"),photos=await fetchAllPhotos(),fin=phase()==="FINISHED",ps=bd.players.filter(p=>bits(p.mask)>0).sort(cmpRank);
+if(!ps.length){$("amsg").textContent="No cards yet.";return}
+const files=[];for(let k=0;k<ps.length;k++){const p=ps[k];$("lmsg").textContent="Building card "+(k+1)+" of "+ps.length+"…";
+const blob=await makeCardBlob(p,fin&&k<5?k+1:0,photos.get(p.pid));files.push({name:String(k+1).padStart(2,"0")+"-"+safeName(p.name)+"-"+bits(p.mask)+"of24.jpg",data:new Uint8Array(await blob.arrayBuffer())})}
+const a=document.createElement("a");a.href=URL.createObjectURL(makeZip(files));a.download="human-bingo-cards.zip";a.click();$("amsg").textContent="Downloaded "+files.length+" cards"}
+catch(e){$("amsg").textContent="Could not build the cards."}finally{endL()}};
+$("lbdl").onclick=async()=>{if(!bigPid)return;const p=lastPlayers.find(x=>x.pid===bigPid);if(!p)return;const endL=startLoad("Building card…",700);
+try{const r=await adminCall("playerphotos",{pid:bigPid}),ph={};for(const it of r.items)ph[it.i]=it.src;const fin=phase()==="FINISHED",k=lastPlayers.slice().sort(cmpRank).findIndex(x=>x.pid===bigPid);
+const blob=await makeCardBlob(p,fin&&k>=0&&k<5?k+1:0,ph),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="human-bingo-"+safeName(p.name)+".jpg";a.click()}
+catch(e){$("amsg").textContent="Could not build that card."}finally{endL()}};
 function enterAdmin(){isAdmin=true;$("admin").className="adm";plist();if(wantLive){wantLive=false;openLive()}}
 $("toAdmin").onclick=async()=>{if(isAdmin){$("admin").classList.toggle("hide");return}const x=prompt("Host password");if(!x)return;pw=x;try{await adminCall("check");sessionStorage.setItem("hb-pw",pw);enterAdmin()}catch(e){pw="";alert("Wrong password")}};
 (async()=>{$("adminLink").className="";if(pw){try{await adminCall("check");enterAdmin()}catch(e){pw="";sessionStorage.removeItem("hb-pw")}}await sync();poll();setInterval(poll,3000);setInterval(sync,20000);if(location.hash==="#live"){wantLive=true;if(isAdmin){wantLive=false;openLive()}else $("toAdmin").click()}})();

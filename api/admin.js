@@ -97,6 +97,18 @@ module.exports = async (req, res) => {
         const vals = await cmd(["MGET", ...ids.map((id) => "hb:t:" + id)]);
         return res.status(200).json({ items: ids.map((id, k) => ({ id, src: vals[k] })).filter((x) => x.src) });
       }
+      case "playerphotos": { // host-only: full-size pictures of one player, for downloading their card
+        const pid = String(body.pid || "");
+        if (!/^[a-z0-9]{8,24}$/.test(pid)) return res.status(400).json({ error: "pid" });
+        const raw = await cmd(["HGET", "hb:prog", pid]);
+        let m = 0;
+        try { m = JSON.parse(raw).m || 0; } catch (e) {}
+        const idx = [];
+        for (let i = 0; i < 25; i++) if (i !== 12 && (m >> i) & 1) idx.push(i);
+        if (!idx.length) return res.status(200).json({ items: [] });
+        const vals = await cmd(["MGET", ...idx.map((i) => "hb:f:" + pid + ":" + i)]);
+        return res.status(200).json({ items: idx.map((i, k) => ({ i, src: vals[k] })).filter((it) => it.src) });
+      }
       case "clearphotos":
         await clearPhotos();
         return res.status(200).json({ ok: true });
